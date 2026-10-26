@@ -2,6 +2,13 @@
 
 Bio-Inspired Algorithms semester AAT project for a four-member team.
 
+| Member | USN |
+|---|---|
+| R V Abhishek | 1BM23CD047 |
+| Sushanth S | 1BM23CD063 |
+| Ullas N | 1BM23CD067 |
+| Vedantha V V | 1BM23CD069 |
+
 **Full title:** Concrete Compressive Strength Prediction Using Differential Evolution–Optimized Support Vector Regression.
 
 ## Objective
@@ -52,4 +59,4 @@ Retain the original attribution and notices. Cite I-Cheng Yeh, “Modeling of st
 
 Use Python with `uv` for dependency management and execution. Project dependencies and run commands will be added with implementation; no training pipeline is included in this setup commit. The surrounding BIO lab environment is separate from this repository.
 
-See [project scope](docs/project-brief.md) and the [submission checklist](docs/submission-checklist.md).
+See the [detailed four-member implementation plan and task network](docs/implementation-plan.md), [project scope](docs/project-brief.md), and [submission checklist](docs/submission-checklist.md).

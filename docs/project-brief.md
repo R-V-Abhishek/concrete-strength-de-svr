@@ -30,14 +30,14 @@ Does DE tuning reduce SVR prediction error relative to default settings, and how
 - Treat published numbers as literature context unless their data splits and evaluation protocols are reproduced.
 - Report measured outcomes honestly, including cases where DE does not outperform random search.
 
-## Suggested four-member responsibilities
+## Four-member responsibilities
 
-1. Dataset validation, preprocessing pipeline, and exploratory analysis.
-2. Default SVR, random search, and shared evaluation contract.
-3. DE implementation, convergence logging, and optimizer verification.
-4. Experiment orchestration, result analysis, and reproducibility checks.
+1. R V Abhishek (1BM23CD047): integration, evaluation contract, experiment orchestration, repository and submission coordination.
+2. Sushanth S (1BM23CD063): dataset validation, preprocessing, split manifests, default SVR, and random search.
+3. Ullas N (1BM23CD067): DE implementation, convergence logging, optimizer verification, and rehearsal coordination.
+4. Vedantha V V (1BM23CD069): literature, result analysis/plots, report/PPT assembly, and artifact quality checks.
 
-All members contribute to the report, PPT, and presentation preparation. Names and final assignments are pending.
+All members contribute to the report, PPT, and presentation preparation. The [implementation plan](implementation-plan.md) defines task owners, reviewers, dependencies, verification, and blockers/enablers.
 
 ## Literature starting points
 
