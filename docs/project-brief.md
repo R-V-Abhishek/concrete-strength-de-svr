@@ -15,7 +15,7 @@ Does DE tuning reduce SVR prediction error relative to default settings, and how
 - Optimize `C`, `gamma`, and `epsilon`; finalize ranges after baseline inspection.
 - Implement standard DE operators explicitly so the bio-inspired algorithm can be explained and assessed.
 - Compare default SVR, random-search SVR, and DE-SVR.
-- Prioritize reproducible experiments, plots, report, and PPT.
+- Prioritize reproducible experiments, plots, report, and PPT. The technical evidence package is saved under `../results/final/`.
 - An application UI, additional optimizers, and extra datasets are outside the initial scope.
 
 ## Evaluation rules
@@ -40,6 +40,20 @@ The project proceeds sequentially, with one owner completing their stage and wor
 4. Vedantha V V (1BM23CD069): report and PPT from the preceding members' logs/results, artifact quality checks, rehearsal coordination, and submission.
 
 The first three members preserve explanations, commands, sources, decisions, and results in `docs/work-log.md`. Vedantha writes both final deliverables from that evidence. All four rehearse and present. The [implementation plan](implementation-plan.md) defines the sequential tasks, handoffs, verification, and blockers/enablers.
+
+## Current technical status
+
+Stage 3 is complete. The final DE searches used five seeds and 300 objective
+calls per seed, followed by holdout evaluation of the validation-selected
+candidates. The final evidence, plots, per-seed metrics, predictions,
+residuals, checksums, and provenance are in [`../results/final/`](../results/final/)
+and the reproduction commands are documented in [`../results/README.md`](../results/README.md).
+
+The mean holdout RMSE was 6.2250 MPa for DE, 6.2328 MPa for Random Search, and
+9.9069 MPa for the default SVR. DE is therefore marginally better than Random
+Search under this protocol; both tuned methods substantially outperform the
+default model. These results are descriptive and must not be presented as a
+statistical significance or state-of-the-art claim.
 
 ## Literature starting points
 

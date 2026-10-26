@@ -1,4 +1,4 @@
-# Frozen Stage 2 protocol
+# Frozen protocol and Stage 3 final handoff
 
 Date: 26 October 2026. Stage 1 owner: Sushanth S (1BM23CD063). Stage 2 owner: R V Abhishek (1BM23CD047). Stage 3 owner: Ullas N (1BM23CD067).
 
@@ -70,6 +70,28 @@ Use d=3, bounds [-5.12,5.12], the five fixed seeds and 300 calls per method. Sav
 6. Add required convergence, performance, residual/prediction and development-only learning curves, following the implementation plan. Build convergence plots against objective calls, including initialization.
 7. Report optimizer-seed variability on one fixed holdout. Avoid unsupported significance/state-of-the-art claims. Pilot scores use three folds and must remain separate from final five-fold results.
 8. Regenerate summaries from saved outputs, document exact commands, and hand the evidence to Vedantha for the report/PPT.
+
+## Stage 3 completion record
+
+Stage 3 was completed by Ullas N on 26 October 2026 on the `final-experiments`
+branch. The frozen protocol was followed without changing the data, folds,
+search space, budget, or seed list:
+
+- Final DE output: `results/de/de_search_results.json`
+- Final evidence: `results/final/final_results.json`
+- Per-seed metrics: `results/final/metrics.csv`
+- Plots: `convergence.png`, `holdout_rmse_comparison.png`,
+  `prediction_residuals.png`, and `learning_curve.png`
+- Reproduction: `uv sync --locked`, `uv run pytest -q`,
+  `uv run concrete-strength de-search`, then
+  `uv run concrete-strength finalize-experiments`
+
+The final DE validation RMSE was 5.8797 ± 0.0198 MPa. Holdout metrics were
+RMSE 6.2250 ± 0.1104 MPa, MAE 4.3143 ± 0.0526 MPa, and R² 0.8324 ± 0.0060.
+Random Search holdout RMSE was 6.2328 ± 0.1194 MPa; default SVR holdout RMSE
+was 9.9069 MPa. The holdout was not used for candidate selection. See the
+[Stage 3 work-log section](work-log.md#stage-3-final-optimization-experiments-holdout-evaluation--plots)
+and [results guide](../results/README.md) for the complete handoff.
 
 ## Remaining administrative items and limitations
 

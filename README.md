@@ -15,7 +15,7 @@ Bio-Inspired Algorithms semester AAT project for a four-member team.
 
 Evaluate whether Differential Evolution (DE) improves the hyperparameters of an RBF Support Vector Regression (SVR) model for predicting concrete compressive strength. Compare default SVR, random-search tuning, and DE tuning using the same data splits and comparable search budgets.
 
-Status: Sushanth completed Stage 1 (data, baseline and Random Search); Abhishek completed Stage 2 (DE implementation, tests and development-only pilot). Ullas owns the final DE experiments/analysis, followed by Vedantha's report and presentation. Pilot results are not final performance claims.
+Status: Stage 1 (data, baseline and Random Search), Stage 2 (DE implementation, tests and development-only pilot), and Stage 3 (final DE experiments, holdout evaluation, analysis and reproducibility evidence) are complete. Vedantha owns the report, presentation and final submission checks. Pilot results remain separate from final performance claims.
 
 ## Repository layout
 
@@ -55,7 +55,7 @@ Retain the original attribution and notices. Cite I-Cheng Yeh, “Modeling of st
 3. Implement DE mutation, crossover, selection, and bound handling explicitly.
 4. Compare DE and random search with matching search spaces and candidate-evaluation budgets.
 5. Record RMSE, MAE, R², runtime, convergence, and variation across optimizer seeds.
-6. Complete the report and presentation from measured results.
+6. Prepare the report and presentation from the measured evidence package.
 
 Use Python with `uv` for dependency management and execution. The surrounding BIO lab environment is separate from this repository.
 
@@ -73,8 +73,8 @@ uv run concrete-strength synthetic-benchmarks --output-dir results/synthetic-rer
 uv run concrete-strength de-search
 ```
 
-The pilot and synthetic checks are saved under `results/pilot/`. `de-search` is the Stage 3 final-budget command: it selects candidates using validation only and saves to `results/de/de_search_results.json`; final holdout refits and analysis remain separate. New Stage 2 commands refuse to overwrite existing outputs.
+The pilot and synthetic checks are saved under `results/pilot/`. `de-search` selects candidates using validation only and saves to `results/de/de_search_results.json`. `finalize-experiments` refits those frozen candidates on development data, evaluates the fixed holdout, and writes the complete package under `results/final/`. These commands refuse to overwrite existing outputs.
 
-Read the [Stage 2 protocol and Stage 3 handoff](docs/protocol.md) and [work log](docs/work-log.md) before final experiments. The existing baseline/random-search artifacts already include holdout evaluations; preserve this chronology when reporting results.
+Read the [protocol and final handoff](docs/protocol.md), [work log](docs/work-log.md), and [results guide](results/README.md) before preparing deliverables. The existing baseline/random-search artifacts already include holdout evaluations; preserve this chronology when reporting results.
 
 See the [detailed four-member implementation plan and task network](docs/implementation-plan.md), [project scope](docs/project-brief.md), and [submission checklist](docs/submission-checklist.md).

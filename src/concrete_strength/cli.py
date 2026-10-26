@@ -36,11 +36,13 @@ from concrete_strength.search import (
     run_random_search_single_seed,
 )
 from concrete_strength.stage2 import de_search, pilot, synthetic_benchmarks
+from concrete_strength.stage3 import finalize_experiments
 
 app = typer.Typer(help="Concrete Compressive Strength DE-SVR Pipeline CLI")
 app.command()(de_search)
 app.command()(pilot)
 app.command()(synthetic_benchmarks)
+app.command("finalize-experiments")(finalize_experiments)
 
 
 @app.command()

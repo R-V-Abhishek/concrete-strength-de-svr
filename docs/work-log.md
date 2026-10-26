@@ -190,10 +190,65 @@ The final command is ready but **was not run in Stage 2**. It performs five fina
 ## Stage 3: Final Optimization Experiments, Holdout Evaluation & Plots
 
 - **Owner:** Ullas N (USN: 1BM23CD067)
-- **Status:** Ready to start after Stage 2 handoff
+- **Status:** Completed
 - **Tasks Assigned:** T10, T11, T12, T13
+- **Date:** 26 October 2026
+- **Working branch:** `final-experiments`
 
-*(To be filled by Stage 3 owner)*
+### 1. Implementation and decisions
+
+- Added `src/concrete_strength/stage3.py` and the
+  `finalize-experiments` CLI command.
+- Ran the frozen `de-search` protocol unchanged: five seeds (`11, 22, 33, 44,
+  55`), five saved development folds, population 15, DE/rand/1/bin, and 300
+  objective calls per seed including initialization.
+- Kept DE selection validation-only. Each saved full-precision DE candidate was
+  refit once on all 826 development rows and evaluated on the fixed 204-row
+  holdout. No holdout result influenced selection.
+- Generated convergence, holdout comparison, prediction/residual, and
+  development-only learning-curve plots. The demonstration model was selected
+  by validation RMSE; seed 11 was the best DE run.
+
+### 2. Exact commands run
+
+```powershell
+python -m pip install -e .
+python -m pytest -q
+python -m concrete_strength.cli de-search
+python -m concrete_strength.cli finalize-experiments
+```
+
+The local run used Python 3.13 on Windows. The repository's reproducible
+environment remains `uv sync --locked`; the direct pip install was only needed
+because `uv` was not available on this machine.
+
+### 3. Verification and measured outcomes
+
+- Existing and DE test suite: **35 passed**.
+- Final DE output: 5 runs × 300 calls = **1,500 development CV objective
+  evaluations**, with no holdout scoring during search.
+- DE validation-best RMSE: **5.8797 ± 0.0198 MPa** across seeds.
+- DE holdout: **RMSE 6.2250 ± 0.1104 MPa, MAE 4.3143 ± 0.0526 MPa,
+  R² 0.8324 ± 0.0060**.
+- Random Search holdout: **RMSE 6.2328 ± 0.1194 MPa**.
+- Default SVR holdout: **RMSE 9.9069 MPa, MAE 7.8854 MPa, R² 0.5755**.
+
+Full precision candidates, per-seed metrics, predictions, residuals, histories,
+plots, checksums and machine provenance are saved in
+[`results/final/`](../results/final/). The summary and reproduction commands
+are in [`results/README.md`](../results/README.md).
+
+### 4. Limitations and handoff to Stage 4
+
+- The holdout is a single fixed partition and optimizer variability is reported
+  descriptively; no unsupported statistical significance claim is made.
+- DE's mean holdout improvement over Random Search is small (0.12% RMSE), so
+  the conclusion is that both tuned methods substantially improve the default
+  model, while DE is marginally better in this protocol.
+- Stage 2 pilot results remain separate from the final five-fold results.
+- Vedantha should use `results/final/final_results.json`, `results/final/metrics.csv`,
+  the four PNG plots, this work log, and `docs/protocol.md` when preparing the
+  report and presentation.
 
 ---
 

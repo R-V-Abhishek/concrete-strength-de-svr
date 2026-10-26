@@ -53,4 +53,22 @@ Transcribed from the professor's instructions supplied in chat. Dates are retain
 - [ ] Convergence curves, performance plots, and run metadata
 - [ ] Reproducible code and instructions
 
+## Technical evidence status
+
+Stage 3 technical evidence is complete and ready for report/PPT preparation:
+
+- Final DE searches and frozen candidates: `../results/de/de_search_results.json`
+- Final metrics, predictions, residuals, provenance and learning-curve data:
+  `../results/final/final_results.json`
+- Per-seed comparison table: `../results/final/metrics.csv`
+- Convergence, holdout comparison, prediction/residual, and learning-curve
+  plots: `../results/final/*.png`
+- Reproduction commands and aggregate results: `../results/README.md`
+- Stage-by-stage decisions and handoff: `work-log.md` and `protocol.md`
+
+The following remain open for Stage 4: drafting and rendering the report/PPT,
+verifying certificate/signature details, confirming repository and Drive
+access, uploading both deliverables, reopening uploaded files, and recording
+presentation/release evidence.
+
 Original rubric: `../references/rubrics/bio-aat-rubric.docx`.
