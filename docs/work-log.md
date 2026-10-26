@@ -1,14 +1,14 @@
 # Project Work Log: Concrete Strength DE-SVR
 
 Project: **Concrete Compressive Strength Prediction Using Differential Evolution–Optimized Support Vector Regression**  
-Sequential Workflow: Stage 1 (Abhishek) → Stage 2 (Sushanth) → Stage 3 (Ullas) → Stage 4 (Vedantha)  
+Sequential Workflow: Stage 1 (Sushanth) → Stage 2 (Abhishek) → Stage 3 (Ullas) → Stage 4 (Vedantha)
 Working Branch: `S_branch`  
 
 ---
 
 ## Stage 1: Setup, Data Ingestion, Evaluation Pipeline & Baselines
 
-- **Owner:** R V Abhishek (USN: 1BM23CD047)
+- **Owner:** Sushanth S (USN: 1BM23CD063)
 - **Status:** Completed
 - **Tasks Assigned:** T01, T02, T03, T04, T05
 - **Working Branch:** `S_branch`
@@ -98,7 +98,7 @@ Working Branch: `S_branch`
 - UCI Machine Learning Repository: Concrete Compressive Strength dataset. DOI: 10.24432/C5PK67.
 - Scikit-Learn SVR & Cross-Validation Documentation: https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
 
-### 6. Handoff to Stage 2 (Sushanth S)
+### 6. Handoff to Stage 2 (R V Abhishek)
 - **Handoff Commit:** `e27e6e0`
 - **Files to Read:** `configs/experiment.json`, `src/concrete_strength/evaluation.py`, `src/concrete_strength/search.py`
 - **Handoff Command to Run:**
@@ -111,18 +111,86 @@ Working Branch: `S_branch`
 
 ## Stage 2: Differential Evolution (DE) Implementation, Tests & Pilot
 
-- **Owner:** Sushanth S (USN: 1BM23CD063)
-- **Status:** Pending Stage 1 handoff
+- **Owner:** R V Abhishek (USN: 1BM23CD047)
+- **Status:** Completed locally; ready for Stage 3 technical handoff
 - **Tasks Assigned:** T06, T07, T08, T09
+- **Date:** 26 October 2026
+- **Working branch / source handoff:** `S_branch`, based on `1ab359a` (Stage 1 implementation `e27e6e0`).
+- **Ownership correction:** Sushanth completed Stage 1; Abhishek completed Stage 2. The original handoff log had the old assignment; names/USNs in this document, the plan and the brief were corrected to match the actual ownership. Historical Windows installation commands/results above are retained as reported, not represented as commands rerun on this Mac.
 
-*(To be filled by Stage 2 owner)*
+### 1. Implementation and decisions
+
+- Implemented explicit NumPy `DE/rand/1/bin` in `src/concrete_strength/de.py`, with separate donor selection, differential mutation, clipping, binomial crossover and greedy selection functions.
+- Three distinct donors exclude the target; F=0.8, CR=0.9; force one mutant coordinate. Deferred updates keep the source population frozen for each generation.
+- Generic scalar-objective DE also supports synthetic test functions. SVR integration uses Stage 1's `evaluate_hyperparameters` unchanged: exactly the same fold-local scaling, log decoding and four-decimal CV fitness as Random Search.
+- Count initialization in the budget; reject incomplete-generation budgets and invalid settings before evaluating anything. Repeated candidates count; no caching or local polishing.
+- Save all evaluated coordinates, decoded values, generation/target index, per-fold RMSE, best-so-far score and per-call/cumulative timing. Keep DE parameter values at full precision for later refits.
+- Added `pilot`, `de-search`, and `synthetic-benchmarks` CLI commands. DE search saves validation-only selections and never accesses holdout for fitting/scoring. Output commands refuse overwrite; select a fresh output directory for reruns.
+- Added missing `uv.lock` and declared `rich` directly because the existing CLI imports it. Project still supports Python >=3.11; this verification used Python 3.12. Existing Stage 1 data/baseline results were not overwritten.
+- Final settings/config are frozen in `configs/experiment.json` and explained in `docs/protocol.md`.
+
+### 2. Commands actually run
+
+```sh
+uv sync
+uv run pytest -q
+uv run concrete-strength verify-stage1
+uv run pytest tests/test_de.py -q
+uv run concrete-strength --help
+uv run concrete-strength pilot
+uv run concrete-strength synthetic-benchmarks
+```
+
+The Codex sandbox required `UV_CACHE_DIR=/tmp/bio-aat-uv-cache` before uv commands; this is a local cache location, not a project requirement. `uv sync --locked` initially failed because the incoming branch had no lockfile; `uv sync` generated it successfully. Future setups should use `uv sync --locked`.
+
+Separate development-only timing probes called the existing evaluator at log coordinates `(4,-5,-3)`, `(4,1,-3)`, `(4,-1,-3)` on the saved pilot folds and wrote `results/pilot/timing_probes.json`. Their calls are outside the matched optimizer comparison and explicitly labelled diagnostics.
+
+### 3. Verification and measured outcomes
+
+- Reproduced incoming Stage 1 suite: **14 tests passed**. `verify-stage1` also passed against committed processed data and baseline JSON.
+- Combined suite after DE addition: **35 tests passed** (14 existing + 21 added). New tests exercise donor exclusion, clipped/unclipped mutation, forced crossover, seed reproducibility, exact initialization-inclusive budget, deferred updates, acceptance/rejection, invalid/nonfinite fitness, known synthetic minima and a real SVR integration whose holdout targets are replaced with NaN to prove they are unused.
+- CLI integration verifies configuration-controlled budgets/folds, validation-only output and overwrite protection.
+- Matched pilot: population 6, budget 24, three development folds, seeds 11/22 for both methods: **288 tuning fits**, zero holdout scoring.
+
+| Method | Seed | Best pilot CV RMSE (MPa) | Search seconds |
+|---|---:|---:|---:|
+| Random Search | 11 | 6.1751 | 1.01 |
+| DE | 11 | 6.1163 | 2.03 |
+| Random Search | 22 | 6.5326 | 2.67 |
+| DE | 22 | 5.9864 | 5.26 |
+
+These are pilot feasibility results, not final performance. The largest measured timing probe took about 2.95 seconds for three-fold fitness. Retain final population 15, budget 300, five seeds/five folds, based on feasible measured runtime; allow substantial runtime margin and monitor the final run.
+
+Synthetic checks (3 dimensions, bounds [-5.12,5.12], five seeds, 300 calls per method): mean best Sphere fitness DE=0.067805 vs Random Search=1.041886; Rastrigin DE=7.685621 vs Random Search=10.432464. Individual seeds and best-so-far histories are saved; no claim that DE always wins or finds an exact global optimum.
+
+### 4. Evidence, caveats and sources
+
+- `results/pilot/stage2_pilot.json`: full pilot candidate histories, fold lists, provenance, source/config/lockfile checksums and run settings.
+- `results/pilot/synthetic_benchmarks.json`: all five-seed synthetic comparisons and convergence traces.
+- `results/pilot/timing_probes.json`: extreme-parameter runtime probes.
+- `docs/protocol.md`: frozen algorithm settings, chronology, runtime decision, precision caveat and Stage 3 commands.
+- Stage 1 had already evaluated baseline/random-search holdout scores. Stage 2 never used these to change DE settings, but the report must not claim the holdout had never been inspected.
+- Stage 1 runtimes were measured on Windows; Stage 2 used macOS arm64. Compare final runtime only on a shared machine/configuration.
+- The existing pandas/xlrd reader emits a deprecation warning but all ingestion tests pass. No reader replacement or warning suppression was introduced.
+- Sources: Stage 1's actual evaluator/search code and saved split contract; Storn & Price (1997), original DE method, DOI `10.1023/A:1008202821328`; UCI source readme/dataset DOI `10.24432/C5PK67`. Actual settings and behavior are documented explicitly rather than inheriting library optimizer defaults.
+
+### 5. Handoff to Stage 3 (Ullas N)
+
+```sh
+uv sync --locked
+uv run pytest -q
+uv run concrete-strength verify-stage1
+uv run concrete-strength de-search
+```
+
+The final command is ready but **was not run in Stage 2**. It performs five final-budget searches and writes `results/de/de_search_results.json` with validation-selected candidates only. Stage 3 must lock all candidates, perform the holdout refits using the existing helper, save final metrics/predictions/plots and complete reproduction. Follow `docs/protocol.md` for exact rules; preserve incoming baseline artifacts and pilot/final separation. Vedantha will prepare the report and slides from these logs and Stage 3's evidence.
 
 ---
 
 ## Stage 3: Final Optimization Experiments, Holdout Evaluation & Plots
 
 - **Owner:** Ullas N (USN: 1BM23CD067)
-- **Status:** Pending Stage 2 handoff
+- **Status:** Ready to start after Stage 2 handoff
 - **Tasks Assigned:** T10, T11, T12, T13
 
 *(To be filled by Stage 3 owner)*

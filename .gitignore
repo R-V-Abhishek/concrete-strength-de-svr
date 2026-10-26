@@ -12,3 +12,6 @@ htmlcov/
 !.env.example
 ~$*
 *.tmp
+*.egg-info/
+build/
+dist/

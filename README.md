@@ -15,7 +15,7 @@ Bio-Inspired Algorithms semester AAT project for a four-member team.
 
 Evaluate whether Differential Evolution (DE) improves the hyperparameters of an RBF Support Vector Regression (SVR) model for predicting concrete compressive strength. Compare default SVR, random-search tuning, and DE tuning using the same data splits and comparable search budgets.
 
-Status: dataset and professor-provided references organized; implementation and experimental results are pending. No performance improvement is claimed yet.
+Status: Sushanth completed Stage 1 (data, baseline and Random Search); Abhishek completed Stage 2 (DE implementation, tests and development-only pilot). Ullas owns the final DE experiments/analysis, followed by Vedantha's report and presentation. Pilot results are not final performance claims.
 
 ## Repository layout
 
@@ -57,6 +57,24 @@ Retain the original attribution and notices. Cite I-Cheng Yeh, “Modeling of st
 5. Record RMSE, MAE, R², runtime, convergence, and variation across optimizer seeds.
 6. Complete the report and presentation from measured results.
 
-Use Python with `uv` for dependency management and execution. Project dependencies and run commands will be added with implementation; no training pipeline is included in this setup commit. The surrounding BIO lab environment is separate from this repository.
+Use Python with `uv` for dependency management and execution. The surrounding BIO lab environment is separate from this repository.
+
+```sh
+uv sync --locked
+uv run pytest -q
+uv run concrete-strength verify-stage1
+```
+
+Stage 2 commands:
+
+```sh
+uv run concrete-strength pilot --output-dir results/pilot-rerun
+uv run concrete-strength synthetic-benchmarks --output-dir results/synthetic-rerun
+uv run concrete-strength de-search
+```
+
+The pilot and synthetic checks are saved under `results/pilot/`. `de-search` is the Stage 3 final-budget command: it selects candidates using validation only and saves to `results/de/de_search_results.json`; final holdout refits and analysis remain separate. New Stage 2 commands refuse to overwrite existing outputs.
+
+Read the [Stage 2 protocol and Stage 3 handoff](docs/protocol.md) and [work log](docs/work-log.md) before final experiments. The existing baseline/random-search artifacts already include holdout evaluations; preserve this chronology when reporting results.
 
 See the [detailed four-member implementation plan and task network](docs/implementation-plan.md), [project scope](docs/project-brief.md), and [submission checklist](docs/submission-checklist.md).

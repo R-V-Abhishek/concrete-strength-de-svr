@@ -36,5 +36,18 @@
   "random_search": {
     "budget": 300,
     "seeds": [11, 22, 33, 44, 55]
+  },
+  "de": {
+    "budget": 300,
+    "seeds": [11, 22, 33, 44, 55],
+    "population_size": 15,
+    "mutation_weight": 0.8,
+    "crossover_rate": 0.9
+  },
+  "pilot": {
+    "budget": 24,
+    "seeds": [11, 22],
+    "population_size": 6,
+    "cv_folds": 3
   }
 }
