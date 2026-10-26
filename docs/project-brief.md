@@ -32,12 +32,14 @@ Does DE tuning reduce SVR prediction error relative to default settings, and how
 
 ## Four-member responsibilities
 
-1. R V Abhishek (1BM23CD047): integration, evaluation contract, experiment orchestration, repository and submission coordination.
-2. Sushanth S (1BM23CD063): dataset validation, preprocessing, split manifests, default SVR, and random search.
-3. Ullas N (1BM23CD067): DE implementation, convergence logging, optimizer verification, and rehearsal coordination.
-4. Vedantha V V (1BM23CD069): literature, result analysis/plots, report/PPT assembly, and artifact quality checks.
+The project proceeds sequentially, with one owner completing their stage and work log before handing over to the next person:
 
-All members contribute to the report, PPT, and presentation preparation. The [implementation plan](implementation-plan.md) defines task owners, reviewers, dependencies, verification, and blockers/enablers.
+1. R V Abhishek (1BM23CD047): setup, dataset validation, preprocessing, split manifests, evaluation, default SVR, random search, and administrative checks.
+2. Sushanth S (1BM23CD063): DE implementation, optimizer tests, integration, pilot timing, and protocol freeze.
+3. Ullas N (1BM23CD067): final experiments, holdout evaluation, analysis, plots, and reproducibility checks.
+4. Vedantha V V (1BM23CD069): report and PPT from the preceding members' logs/results, artifact quality checks, rehearsal coordination, and submission.
+
+The first three members preserve explanations, commands, sources, decisions, and results in `docs/work-log.md`. Vedantha writes both final deliverables from that evidence. All four rehearse and present. The [implementation plan](implementation-plan.md) defines the sequential tasks, handoffs, verification, and blockers/enablers.
 
 ## Literature starting points
 

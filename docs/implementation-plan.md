@@ -313,7 +313,7 @@ Before marking Stage 4 complete:
 | Compute feasibility | Not measured | Sushanth | Pilot timing and frozen final budget |
 | Team/professor GitHub and Drive access | Membership/write access unverified | Current stage owner; Vedantha checks final access | Successful authorized access/upload/reopen checks |
 | Ready dataset and professor references | Available | All | Existing raw XLS, source ZIP/readme, rubric and examples |
-| Repository | Created and initially pushed; plan edits currently local | Current stage owner | Verified handoff commit on remote |
+| Repository | Sequential plan committed in `67de143`; local branch matches the recorded `origin/main` at review time | Current stage owner | Verified handoff commit on remote |
 
 Maintain actual blockers and resolutions in `docs/work-log.md`. If a stage is blocked, finish its independent tasks, identify the exact dependency and resolve it before handoff. A member becoming unavailable requires explicitly reassigning that stage; preserve the sequential order.
 
