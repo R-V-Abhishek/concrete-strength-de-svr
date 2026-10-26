@@ -99,7 +99,7 @@ Working Branch: `S_branch`
 - Scikit-Learn SVR & Cross-Validation Documentation: https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
 
 ### 6. Handoff to Stage 2 (Sushanth S)
-- **Handoff Commit:** Pending
+- **Handoff Commit:** `e27e6e0`
 - **Files to Read:** `configs/experiment.json`, `src/concrete_strength/evaluation.py`, `src/concrete_strength/search.py`
 - **Handoff Command to Run:**
   ```powershell
