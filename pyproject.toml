@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "concrete-strength"
+version = "0.1.0"
+description = "Concrete Compressive Strength Prediction Using Differential Evolution-Optimized SVR"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "xlrd>=2.0.1",
+    "scikit-learn>=1.4",
+    "matplotlib>=3.8",
+    "typer>=0.9",
+    "pytest>=8.0",
+    "rich>=13",
+]
+
+[project.scripts]
+concrete-strength = "concrete_strength.cli:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = [
+    "ignore:The xlrd engine is deprecated:FutureWarning",
+]

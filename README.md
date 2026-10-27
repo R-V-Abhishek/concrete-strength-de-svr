@@ -15,7 +15,7 @@ Bio-Inspired Algorithms semester AAT project for a four-member team.
 
 Evaluate whether Differential Evolution (DE) improves the hyperparameters of an RBF Support Vector Regression (SVR) model for predicting concrete compressive strength. Compare default SVR, random-search tuning, and DE tuning using the same data splits and comparable search budgets.
 
-Status: dataset and professor-provided references organized; implementation and experimental results are pending. No performance improvement is claimed yet.
+Status: Stages 1–3 and the technical closeout are complete. Vedantha can prepare the report and presentation from the [frozen technical handoff](docs/technical-closeout.md). Original final model selections and holdout results are preserved; the learning-curve diagnostic has been corrected and the evidence audited. Pilot results remain separate from final performance claims.
 
 ## Repository layout
 
@@ -55,8 +55,26 @@ Retain the original attribution and notices. Cite I-Cheng Yeh, “Modeling of st
 3. Implement DE mutation, crossover, selection, and bound handling explicitly.
 4. Compare DE and random search with matching search spaces and candidate-evaluation budgets.
 5. Record RMSE, MAE, R², runtime, convergence, and variation across optimizer seeds.
-6. Complete the report and presentation from measured results.
+6. Prepare the report and presentation from the measured evidence package.
 
-Use Python with `uv` for dependency management and execution. Project dependencies and run commands will be added with implementation; no training pipeline is included in this setup commit. The surrounding BIO lab environment is separate from this repository.
+Use Python with `uv` for dependency management and execution. The surrounding BIO lab environment is separate from this repository.
+
+```sh
+uv sync --locked
+uv run pytest -q
+uv run concrete-strength verify-stage1
+```
+
+Stage 2 commands:
+
+```sh
+uv run concrete-strength pilot --output-dir results/pilot-rerun
+uv run concrete-strength synthetic-benchmarks --output-dir results/synthetic-rerun
+uv run concrete-strength de-search
+```
+
+The pilot and synthetic checks are saved under `results/pilot/`. `de-search` selects candidates using validation only and saves to `results/de/de_search_results.json`. `finalize-experiments` refits those frozen candidates on development data, evaluates the fixed holdout, and writes the complete package under `results/final/`. These commands refuse to overwrite existing outputs.
+
+Read the [protocol and final handoff](docs/protocol.md), [work log](docs/work-log.md), and [results guide](results/README.md) before preparing deliverables. The existing baseline/random-search artifacts already include holdout evaluations; preserve this chronology when reporting results.
 
 See the [detailed four-member implementation plan and task network](docs/implementation-plan.md), [project scope](docs/project-brief.md), and [submission checklist](docs/submission-checklist.md).

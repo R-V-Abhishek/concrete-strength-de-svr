@@ -1,0 +1,182 @@
+{
+  "status": "passed",
+  "checked_at_utc": "2026-10-27T03:02:58.113670+00:00",
+  "checks": [
+    "original data/config/input checksums",
+    "holdout and CV group isolation",
+    "all 3000 candidate records and budgets",
+    "validation-only demonstration selection",
+    "all saved prediction metrics and CSV rows",
+    "aggregate means and sample SDs",
+    "nested whole-group three-fold learning curve",
+    "five selected-model CV/holdout refits"
+  ],
+  "cross_environment_tolerance": 0.001,
+  "saved_prediction_rounding_tolerance": 0.0002,
+  "historical_checksum_checks": {
+    "results/de/de_search_results.json": "CRLF text checkout",
+    "results/baseline/random_search_results.json": "CRLF text checkout",
+    "results/baseline/default_baseline.json": "CRLF text checkout",
+    "data/raw/Concrete_Data.xls": "exact",
+    "data/processed/concrete_cleaned.csv": "CRLF text checkout",
+    "data/processed/splits_manifest.json": "CRLF text checkout",
+    "configs/experiment.json": "CRLF text checkout",
+    "uv.lock": "CRLF text checkout"
+  },
+  "selected_model_reproduction": [
+    {
+      "seed": 11,
+      "holdout_metrics": {
+        "rmse": 6.371,
+        "mae": 4.2895,
+        "r2": 0.8244
+      },
+      "holdout_absolute_differences": {
+        "rmse": 0.00019999999999953388,
+        "mae": 9.999999999976694e-05,
+        "r2": 0.0
+      },
+      "cv_rmse": 5.8601,
+      "cv_absolute_difference": 0.0
+    },
+    {
+      "seed": 22,
+      "holdout_metrics": {
+        "rmse": 6.1675,
+        "mae": 4.2513,
+        "r2": 0.8355
+      },
+      "holdout_absolute_differences": {
+        "rmse": 0.0,
+        "mae": 0.0,
+        "r2": 0.0
+      },
+      "cv_rmse": 5.8645,
+      "cv_absolute_difference": 0.0
+    },
+    {
+      "seed": 33,
+      "holdout_metrics": {
+        "rmse": 6.083,
+        "mae": 4.347,
+        "r2": 0.84
+      },
+      "holdout_absolute_differences": {
+        "rmse": 0.0,
+        "mae": 9.999999999976694e-05,
+        "r2": 0.0
+      },
+      "cv_rmse": 5.8986,
+      "cv_absolute_difference": 0.0
+    },
+    {
+      "seed": 44,
+      "holdout_metrics": {
+        "rmse": 6.2872,
+        "mae": 4.3861,
+        "r2": 0.829
+      },
+      "holdout_absolute_differences": {
+        "rmse": 0.00010000000000065512,
+        "mae": 9.999999999976694e-05,
+        "r2": 0.0
+      },
+      "cv_rmse": 5.9028,
+      "cv_absolute_difference": 0.0
+    },
+    {
+      "seed": 55,
+      "holdout_metrics": {
+        "rmse": 6.2163,
+        "mae": 4.2974,
+        "r2": 0.8329
+      },
+      "holdout_absolute_differences": {
+        "rmse": 0.0,
+        "mae": 0.0,
+        "r2": 0.0
+      },
+      "cv_rmse": 5.8722,
+      "cv_absolute_difference": 9.999999999976694e-05
+    }
+  ],
+  "comparison": {
+    "de": {
+      "validation": {
+        "mean": 5.8797,
+        "std": 0.0198
+      },
+      "holdout": {
+        "rmse": {
+          "mean": 6.225,
+          "std": 0.1104
+        },
+        "mae": {
+          "mean": 4.3143,
+          "std": 0.0526
+        },
+        "r2": {
+          "mean": 0.8324,
+          "std": 0.006
+        }
+      }
+    },
+    "random_search": {
+      "validation": {
+        "mean": 5.9399,
+        "std": 0.0287
+      },
+      "holdout": {
+        "rmse": {
+          "mean": 6.2328,
+          "std": 0.1194
+        },
+        "mae": {
+          "mean": 4.3502,
+          "std": 0.0253
+        },
+        "r2": {
+          "mean": 0.8319,
+          "std": 0.0064
+        }
+      }
+    }
+  },
+  "provenance": {
+    "code_revision": "0cd22f3fd5206a83b6fe46155a8565bb4391786a",
+    "working_tree_dirty": true,
+    "python": "3.12.13 (main, Jun  2 2026, 22:42:28) [Clang 22.1.3 ]",
+    "platform": "macOS-26.7.1-arm64-arm-64bit",
+    "processor": "arm",
+    "fold_workers": 1,
+    "versions": {
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1"
+    },
+    "sha256": {
+      "configs/experiment.json": "a6682e014c3ea3f62277a6d1bedac09ad8b8df6aca8b114ccf4150d9e18c20af",
+      "data/processed/concrete_cleaned.csv": "3d8fc79a08280e8471b411ac553bfdd64c56cf2fe6499fcdf27c9f88eb6753e8",
+      "data/processed/splits_manifest.json": "fee3e45aacf452c59f4b316e46d6bc33ee9be42bfd3ef121916262d584845c63",
+      "data/raw/Concrete_Data.xls": "710076c66b9ca3f8050e7942f3dcbdbe04013534daeb0077ffd3079a52d8e0c4",
+      "src/concrete_strength/de.py": "8c64af4210e437e2c414e25f1bffbfebb010c70b3507de5d8ce53ba4daa23165",
+      "src/concrete_strength/stage2.py": "3901662ac5b0114397eec46e1fb643f5cdef5a18ec87bfa3eba9f4652a5b030e",
+      "src/concrete_strength/evaluation.py": "a6d41cd3b044c504b5a5fbde0d9573267fd28eb5f7fa57814580c5496a0b06bb",
+      "src/concrete_strength/search.py": "1095bc7660f46effcb5e9a7bdd0bb46b36b75b3b350d576f03aadd0b75eb0272",
+      "src/concrete_strength/data.py": "d0cb4ba18f45c3a8635df9beeed32ba5c590ab3d32e5b251571052be6c004ff4",
+      "uv.lock": "0224d87d7b9e2640948976205e0a9db24df647eb2eee444c45896ae9e7c3ed2a"
+    }
+  },
+  "verifier_sha256": "4b7bf163ad6ee0237dc22c0ebc43f4c1a40c8681fdd6af51a2a0beadb7b66f61",
+  "stage3_sha256": "90d33face7a79e6a6517e7d2ad2b7fda4560b8805ed1469a5f8303ffd707976e",
+  "evidence_sha256": {
+    "results/final/convergence.png": "c041b0e54f6af5d9a8a347f67c8c9b98e0672cddcd73588d7c2044020137469e",
+    "results/final/final_results.json": "33c4850b039681ce55e417fc3c42709cff9c791ff1d7bfd6914edbc1e31d91e8",
+    "results/final/holdout_rmse_comparison.png": "931a584e777c31d6219b8f3386be152acd3f056127bda0470a5cddcb15e084cb",
+    "results/final/learning_curve.csv": "4823f8fe3010657f3becfd44e4f11c3a3aa035aedd4bb7a4b65c758e508d12c7",
+    "results/final/learning_curve.png": "4f49504b6db6c9112ef0d9802ca6799ac143ae9a2590c87f102bc67f8dfa29c2",
+    "results/final/metrics.csv": "542e0dfe08bcad84628d23404bd45a51a33c23345985421e7d08fa362601791c",
+    "results/final/prediction_residuals.png": "b2b02dec77285d325255596cfbcbab4ea74c40d6975b70ae9c013d450953d187"
+  }
+}

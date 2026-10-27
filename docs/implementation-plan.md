@@ -4,7 +4,7 @@ Updated: 26 October 2026. Version 2.0 replaces the earlier parallel-work plan.
 
 **Title:** Concrete Compressive Strength Prediction Using Differential Evolution–Optimized Support Vector Regression.
 
-**Workflow:** Abhishek finishes → Sushanth finishes → Ullas finishes → Vedantha finishes the report and presentation. Only one member owns active project work at a time. Each person records their work before handing it over; the last person writes both deliverables from the logs and saved results.
+**Workflow:** Sushanth finishes → Abhishek finishes → Ullas finishes → Vedantha finishes the report and presentation. Only one member owns active project work at a time. Each person records their work before handing it over; the last person writes both deliverables from the logs and saved results.
 
 **Target:** finish the technical work by 29 October and the documents by 30 October, ready for the 31 October lab if that presentation slot is confirmed. The professor's stated deadline is 05 November; 01–04 November is contingency time. These are target dates, not confirmed bookings.
 
@@ -12,7 +12,7 @@ Updated: 26 October 2026. Version 2.0 replaces the earlier parallel-work plan.
 
 Use the existing UCI dataset and a standard RBF-SVR model. Implement Differential Evolution (DE) explicitly to tune `C`, `gamma`, and `epsilon`. Compare default SVR, random-search tuning, and DE tuning using identical validation folds and equal candidate budgets for the two searches.
 
-No data collection, new datasets, website, deep network, feature selection, additional optimizer, or elaborate collaboration infrastructure is required. The existing raw XLS, ZIP/readme, professor's rubric and example report/PPT remain unchanged. Implementation has not started.
+No data collection, new datasets, website, deep network, feature selection, additional optimizer, or elaborate collaboration infrastructure is required. The existing raw XLS, ZIP/readme, professor's rubric and example report/PPT remain unchanged. Sushanth completed Stage 1 and Abhishek completed Stage 2; see the [work log](work-log.md) for measured evidence and the [frozen protocol](protocol.md) for Stage 3. The assignments below reflect their agreed interchange of sections.
 
 Completion means:
 
@@ -29,8 +29,8 @@ Improvement over baseline is a rubric objective, not a guaranteed result. Report
 
 | Order | Owner | USN | Responsibility | Target window | Estimated focused effort |
 |---|---|---|---|---|---|
-| 1 | R V Abhishek | 1BM23CD047 | Setup, data, evaluation, default baseline, random search and administrative checks | 26–27 October | 6–8 hours |
-| 2 | Sushanth S | 1BM23CD063 | DE implementation, tests, integration and pilot | 27–28 October, after Stage 1 handoff | 5–7 hours |
+| 1 | Sushanth S | 1BM23CD063 | Setup, data, evaluation, default baseline, random search and administrative checks | 26–27 October | 6–8 hours |
+| 2 | R V Abhishek | 1BM23CD047 | DE implementation, tests, integration and pilot | 27–28 October, after Stage 1 handoff | 5–7 hours |
 | 3 | Ullas N | 1BM23CD067 | Final experiments, analysis, plots, reproducibility and complete evidence package | 28–29 October, after Stage 2 handoff | 5–7 hours plus measured computer runtime |
 | 4 | Vedantha V V | 1BM23CD069 | Report, slides, final artifact checks, rehearsal coordination and submission | 29–30 October, after Stage 3 handoff | 7–9 hours |
 
@@ -61,8 +61,8 @@ Each stage log must contain:
 
 Stage-specific evidence:
 
-- **Abhishek:** raw schema and checksum, data audit/duplicate counts, units, split/fold IDs, preprocessing rationale, SVR defaults, random-search behavior and baseline validation metrics.
-- **Sushanth:** DE equations/pseudocode, encoding, bounds, initialization, donor selection, crossover, selection, stopping rule, test outputs and pilot timing.
+- **Sushanth:** raw schema and checksum, data audit/duplicate counts, units, split/fold IDs, preprocessing rationale, SVR defaults, random-search behavior and baseline validation metrics.
+- **Abhishek:** DE equations/pseudocode, encoding, bounds, initialization, donor selection, crossover, selection, stopping rule, test outputs and pilot timing.
 - **Ullas:** frozen protocol, all run configurations, selected hyperparameters, per-seed results, baseline comparisons, runtime, plot paths, interpretation and limitations.
 - **Vedantha:** report/PPT paths, coverage and visual checks, reference verification, submission/access evidence and unresolved administrative actions.
 
@@ -74,19 +74,19 @@ Every task begins **Planned**. Tasks run in the listed order. “Blocks” below
 
 | ID | Owner | Task and required output | Depends on | Blocker and response | Enabler / acceptance evidence |
 |---|---|---|---|---|---|
-| T01 | Abhishek | Verify registration of the exact title and all four names/USNs; check presentation slot, certificate details, team/reviewer repository access and submission-folder access | None | Permissions or missing professor details: record and seek the specific administrative resolution; continue technical tasks if independent | Existing links, team list and professor examples; log verified facts and pending items |
-| T02 | Abhishek | Initialize independent uv project, small module layout, shared JSON config and work log | T01 | Python/dependency mismatch: select compatible versions and lock them; preserve parent environment | Python 3.12 target, uv tooling and existing repository; package imports successfully |
-| T03 | Abhishek | Inspect XLS headers/types/units/rows/missingness/duplicate inputs; record provenance and split/fold manifests | T02 | Missing XLS reader or anomalous records: use xlrd, inspect original archive and document the resolution | Raw XLS, ZIP/readme; no guessed schema and no overlapping groups |
-| T04 | Abhishek | Implement fold-local scaler/SVR pipeline, RMSE fitness, metrics, default/dummy baselines and equal-space random search | T03 | Leakage, incorrect score sign or inconsistent bounds: fix through targeted checks before handoff | Fixed folds and shared configuration; small end-to-end run produces traceable outputs |
-| T05 | Abhishek | Test data/evaluator/random-search behavior; finish log, commands and handoff commit | T04 | Failed tests or incomplete metadata: finish fixes before Stage 2 | Passing targeted tests and rerunnable baseline/random-search command |
-| T06 | Sushanth | Run Stage 1 handoff check; implement DE/rand/1/bin with explicit operators | T05 | Broken upstream assumptions: inspect and fix before adding DE; record contract changes | Existing evaluator/random-search result format and synthetic objectives |
-| T07 | Sushanth | Verify DE bounds, donors, crossover, greedy selection, seeds and call budget; run Sphere/Rastrigin checks | T06 | Stochastic/brittle tests or operator defects: test invariants and simple known objectives | Cheap function evaluations; saved test and benchmark outputs |
-| T08 | Sushanth | Integrate DE with SVR, run development-only pilot, measure runtime and freeze final protocol/config | T07 | Slow fits/warnings/accounting mismatch: diagnose and rerun pilot; reduce both search budgets if necessary before freeze | Working shared evaluator; pilot evidence determines feasible run budget |
-| T09 | Sushanth | Finish algorithm/pilot log, equations, source references and handoff commit | T08 | Missing explanation or nonreproducible pilot: complete before Stage 3 | Passing tests, pilot command and frozen configuration |
-| T10 | Ullas | Verify Stage 2 handoff; run all predefined final baseline and optimizer evaluations, selecting candidates on validation only | T09 | Failed/incomplete run: retain failure log, fix and rerun the affected seed; do not discard inconvenient outcomes | Tested runner, fixed protocol and reserved compute window |
-| T11 | Ullas | Lock selected candidates; refit on development data and evaluate every predefined selection on holdout | T10 | Request to tune against holdout: preserve primary protocol; label any later exploration separately | Saved validation-selected candidates and untouched holdout |
-| T12 | Ullas | Generate summary tables, convergence/learning curves, prediction/residual plots and synthetic-function summaries | T11 | Missing trace/units or inconsistent aggregation: correct saved outputs and regenerate | Candidate histories, per-run metrics and saved predictions |
-| T13 | Ullas | Verify locked setup/tests and saved-result regeneration from a clean checkout; supply reproduction commands, literature notes and complete evidence log | T12 | Hidden local dependency or unexplained metric mismatch: fix and reverify before handoff | Lockfile, source checksum, manifests and saved artifacts |
+| T01 | Sushanth | Verify registration of the exact title and all four names/USNs; check presentation slot, certificate details, team/reviewer repository access and submission-folder access | None | Permissions or missing professor details: record and seek the specific administrative resolution; continue technical tasks if independent | Existing links, team list and professor examples; log verified facts and pending items |
+| T02 | Sushanth | Initialize independent uv project, small module layout, shared JSON config and work log | T01 | Python/dependency mismatch: select compatible versions and lock them; preserve parent environment | Python 3.12 target, uv tooling and existing repository; package imports successfully |
+| T03 | Sushanth | Inspect XLS headers/types/units/rows/missingness/duplicate inputs; record provenance and split/fold manifests | T02 | Missing XLS reader or anomalous records: use xlrd, inspect original archive and document the resolution | Raw XLS, ZIP/readme; no guessed schema and no overlapping groups |
+| T04 | Sushanth | Implement fold-local scaler/SVR pipeline, RMSE fitness, metrics, default/dummy baselines and equal-space random search | T03 | Leakage, incorrect score sign or inconsistent bounds: fix through targeted checks before handoff | Fixed folds and shared configuration; small end-to-end run produces traceable outputs |
+| T05 | Sushanth | Test data/evaluator/random-search behavior; finish log, commands and handoff commit | T04 | Failed tests or incomplete metadata: finish fixes before Stage 2 | Passing targeted tests and rerunnable baseline/random-search command |
+| T06 | Abhishek | Run Stage 1 handoff check; implement DE/rand/1/bin with explicit operators | T05 | Broken upstream assumptions: inspect and fix before adding DE; record contract changes | Existing evaluator/random-search result format and synthetic objectives |
+| T07 | Abhishek | Verify DE bounds, donors, crossover, greedy selection, seeds and call budget; run Sphere/Rastrigin checks | T06 | Stochastic/brittle tests or operator defects: test invariants and simple known objectives | Cheap function evaluations; saved test and benchmark outputs |
+| T08 | Abhishek | Integrate DE with SVR, run development-only pilot, measure runtime and freeze final protocol/config | T07 | Slow fits/warnings/accounting mismatch: diagnose and rerun pilot; reduce both search budgets if necessary before freeze | Working shared evaluator; pilot evidence determines feasible run budget |
+| T09 | Abhishek | Finish algorithm/pilot log, equations, source references and handoff commit | T08 | Missing explanation or nonreproducible pilot: complete before Stage 3 | Passing tests, pilot command and frozen configuration |
+| T10 | Ullas | **Completed:** Verify Stage 2 handoff; run all predefined final baseline and optimizer evaluations, selecting candidates on validation only | T09 | Failed/incomplete run: retain failure log, fix and rerun the affected seed; do not discard inconvenient outcomes | `results/de/de_search_results.json`; 1,500 development CV evaluations |
+| T11 | Ullas | **Completed:** Lock selected candidates; refit on development data and evaluate every predefined selection on holdout | T10 | Request to tune against holdout: preserve primary protocol; label any later exploration separately | `results/final/final_results.json`; fixed 204-row holdout |
+| T12 | Ullas | **Completed:** Generate summary tables, convergence/learning curves, prediction/residual plots and synthetic-function summaries | T11 | Missing trace/units or inconsistent aggregation: correct saved outputs and regenerate | `results/final/metrics.csv` and four PNG plots |
+| T13 | Ullas | **Completed:** Verify locked setup/tests and saved-result regeneration; supply reproduction commands, literature notes and complete evidence log | T12 | Hidden local dependency or unexplained metric mismatch: fix and reverify before handoff | 35 passing tests, work log, results guide and protocol |
 | T14 | Vedantha | Run handoff checks; inspect logs/results and sources, then create complete report with every mandatory section | T13 | Missing evidence, certificate details or citation: resolve the exact gap; never copy identities/results from examples | Three completed stage logs, verified figures, professor template examples and chapter list |
 | T15 | Vedantha | Create PPTX and speaker notes with every required heading, methods and actual results | T14 | Dense slides or unsupported claims: shorten prose and trace every claim to evidence | Finished report, source plots and algorithm explanation |
 | T16 | Vedantha | Render/inspect every report page and slide; verify names/USNs/numbers/citations; coordinate full-team rehearsal and final checks | T15 | Layout errors, missing signatures or unclear explanations: fix before release; log unresolved admin item | Editable sources, final result tables, local/offline copies and all four members |
@@ -101,13 +101,13 @@ The chart is an activity-on-node network. Every arrow is a finish-to-start depen
 
 ```mermaid
 flowchart TD
-    subgraph S1["Stage 1 - R V Abhishek"]
+    subgraph S1["Stage 1 - Sushanth S"]
         T01["T01 Administration"] --> T02["T02 Setup and log"]
         T02 --> T03["T03 Data and splits"]
         T03 --> T04["T04 Baseline and random search"]
         T04 --> T05["T05 Verify and hand over"]
     end
-    subgraph S2["Stage 2 - Sushanth S"]
+    subgraph S2["Stage 2 - R V Abhishek"]
         T06["T06 Implement DE"] --> T07["T07 DE tests and functions"]
         T07 --> T08["T08 Pilot and protocol freeze"]
         T08 --> T09["T09 Log and hand over"]
@@ -214,7 +214,7 @@ report/
 presentation/
 ```
 
-Abhishek establishes a simple callable `objective(log_parameters) -> mean_cv_rmse` and shared search result records (best parameters, fitness, complete history, seed, call count, timing). Sushanth implements DE against that existing interface. Ullas uses both through the same runner. Avoid generic optimizer frameworks or new abstraction layers.
+Sushanth establishes a simple callable `objective(log_parameters) -> mean_cv_rmse` and shared search result records (best parameters, fitness, complete history, seed, call count, timing). Abhishek implements DE against that existing interface. Ullas uses both through the same runner. Avoid generic optimizer frameworks or new abstraction layers.
 
 Save:
 
@@ -275,7 +275,7 @@ Include the exact required headings; each can span more than one slide if needed
 9. **Future Scope** — extensions clearly distinguished from completed work.
 10. **References** — readable primary citations, dataset attribution and repository link.
 
-Vedantha prepares speaker notes based on the same logs. For presentation, Abhishek explains data/baseline, Sushanth explains DE, Ullas explains experiments/results, and Vedantha introduces/concludes and explains limitations. All four rehearse and understand the complete pipeline. Prepare a concise core talk; use the actual duration confirmed with the professor.
+Vedantha prepares speaker notes based on the same logs. For presentation, Sushanth explains data/baseline, Abhishek explains DE, Ullas explains experiments/results, and Vedantha introduces/concludes and explains limitations. All four rehearse and understand the complete pipeline. Prepare a concise core talk; use the actual duration confirmed with the professor.
 
 ## 10. Rubric traceability and final release checklist
 
@@ -307,13 +307,13 @@ Before marking Stage 4 complete:
 
 | Item | Current state | Owner while active | Closure evidence |
 |---|---|---|---|
-| Registration and presentation slot | Unverified | Abhishek; Vedantha follows up at final stage if still pending | Correct registration row and booked slot |
-| Cover/certificate metadata and signatures | Unverified | Abhishek records requirements; Vedantha finalizes | Approved details and required signatures |
-| Dataset/schema/duplicate policy | Actual audit pending | Abhishek | Audit and group-disjoint manifests |
-| Compute feasibility | Not measured | Sushanth | Pilot timing and frozen final budget |
+| Registration and presentation slot | Unverified | Sushanth; Vedantha follows up at final stage if still pending | Correct registration row and booked slot |
+| Cover/certificate metadata and signatures | Unverified | Sushanth records requirements; Vedantha finalizes | Approved details and required signatures |
+| Dataset/schema/duplicate policy | Actual audit pending | Sushanth | Audit and group-disjoint manifests |
+| Compute feasibility | Closed: final five-seed DE run completed | Ullas | `results/de/de_search_results.json` and Stage 3 work log |
 | Team/professor GitHub and Drive access | Membership/write access unverified | Current stage owner; Vedantha checks final access | Successful authorized access/upload/reopen checks |
 | Ready dataset and professor references | Available | All | Existing raw XLS, source ZIP/readme, rubric and examples |
-| Repository | Sequential plan committed in `67de143`; local branch matches the recorded `origin/main` at review time | Current stage owner | Verified handoff commit on remote |
+| Repository | Stage 3 changes ready for handoff; report/PPT remain Stage 4 work | Ullas, then Vedantha | Pushed Stage 3 commit and final deliverable commit |
 
 Maintain actual blockers and resolutions in `docs/work-log.md`. If a stage is blocked, finish its independent tasks, identify the exact dependency and resolve it before handoff. A member becoming unavailable requires explicitly reassigning that stage; preserve the sequential order.
 
@@ -327,6 +327,6 @@ Before final runs, a justified protocol change can be logged with date, reason, 
 - Storn and Price (1997), original DE method: [DOI](https://doi.org/10.1023/A:1008202821328). Verify and cite during implementation.
 - Official [SVR reference](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html), [cross-validation guidance](https://scikit-learn.org/stable/modules/cross_validation.html), and [DE reference](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html). Record installed versions and explicit chosen settings.
 - [Concrete-model comparison study](https://www.mdpi.com/2076-3417/15/23/12383): review dataset variant/split before adopting any benchmark claim.
-- [Repository](https://github.com/R-V-Abhishek/concrete-strength-de-svr).
+- [Repository](https://github.com/R-V-Sushanth/concrete-strength-de-svr).
 - [Registration sheet](https://docs.google.com/spreadsheets/d/1qJdlb0Gn3ZuhiawFJYLXDUS3Ovxf_J_SjEr1bWrXcPI/edit?usp=sharing).
 - [Submission folder](https://drive.google.com/drive/folders/1Ap_3JzDs8Xdv40QsXLYkSlMmOLaC4F_o?usp=drive_link).

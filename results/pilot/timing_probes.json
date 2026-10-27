@@ -1,0 +1,48 @@
+{
+  "purpose": "Development-only timing probes, separate from optimizer budgets",
+  "pilot_reference": "stage2_pilot.json",
+  "probes": [
+    {
+      "log_params": [
+        4.0,
+        -5.0,
+        -3.0
+      ],
+      "mean_cv_rmse": 10.6466,
+      "fold_rmses": [
+        10.981,
+        10.3611,
+        10.5976
+      ],
+      "seconds": 0.0394682499972987
+    },
+    {
+      "log_params": [
+        4.0,
+        1.0,
+        -3.0
+      ],
+      "mean_cv_rmse": 13.8756,
+      "fold_rmses": [
+        12.8239,
+        13.1083,
+        15.6947
+      ],
+      "seconds": 0.04995670900098048
+    },
+    {
+      "log_params": [
+        4.0,
+        -1.0,
+        -3.0
+      ],
+      "mean_cv_rmse": 8.5585,
+      "fold_rmses": [
+        6.854,
+        9.8295,
+        8.992
+      ],
+      "seconds": 2.9530970420019003
+    }
+  ]
+}

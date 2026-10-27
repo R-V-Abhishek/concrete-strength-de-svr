@@ -1,0 +1,53 @@
+{
+  "project_title": "Concrete Compressive Strength Prediction Using Differential Evolution–Optimized Support Vector Regression",
+  "data": {
+    "raw_path": "data/raw/Concrete_Data.xls",
+    "processed_dir": "data/processed",
+    "clean_data_path": "data/processed/concrete_cleaned.csv",
+    "splits_manifest_path": "data/processed/splits_manifest.json",
+    "feature_columns": [
+      "cement",
+      "blast_furnace_slag",
+      "fly_ash",
+      "water",
+      "superplasticizer",
+      "coarse_aggregate",
+      "fine_aggregate",
+      "age"
+    ],
+    "target_column": "compressive_strength",
+    "target_units": "MPa"
+  },
+  "split": {
+    "test_size": 0.20,
+    "random_state": 42,
+    "cv_folds": 5
+  },
+  "search_space": {
+    "log_C": [-2.0, 4.0],
+    "log_gamma": [-5.0, 1.0],
+    "log_epsilon": [-3.0, 1.0]
+  },
+  "default_svr": {
+    "C": 1.0,
+    "gamma": "scale",
+    "epsilon": 0.1
+  },
+  "random_search": {
+    "budget": 300,
+    "seeds": [11, 22, 33, 44, 55]
+  },
+  "de": {
+    "budget": 300,
+    "seeds": [11, 22, 33, 44, 55],
+    "population_size": 15,
+    "mutation_weight": 0.8,
+    "crossover_rate": 0.9
+  },
+  "pilot": {
+    "budget": 24,
+    "seeds": [11, 22],
+    "population_size": 6,
+    "cv_folds": 3
+  }
+}

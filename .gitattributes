@@ -1,0 +1,15 @@
+# Keep generated text checksums portable across Windows/macOS/Linux checkouts.
+*.py text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.lock text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+results/final/SHA256SUMS text eol=lf
+# Preserve the original downloaded source files exactly.
+data/raw/* -text
+*.png binary
+*.pdf binary
+*.pptx binary
+*.docx binary
+*.zip binary
