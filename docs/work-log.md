@@ -282,6 +282,10 @@ are in [`results/README.md`](../results/README.md).
   `uv run concrete-strength verify-evidence`. Sandbox runs additionally set
   `UV_CACHE_DIR=/tmp/bio-aat-uv-cache` and `MPLCONFIGDIR=/tmp/bio-aat-mpl`;
   these are local writable cache paths rather than project requirements.
+- Independent fresh checkout of code commit `6e7eb0f`: locked setup, all 43 tests,
+  selected-model audit and all eight evidence checksums passed. The setup required
+  downloading exact pinned wheels after an offline cache miss; no version change.
+  Clean-checkout record: `results/closeout/fresh-checkout-verification.json`.
 - Frozen report inputs and reproduction steps: `docs/technical-closeout.md`.
   The technical tag is `technical-closeout-2026-10-27`; the saved verification
   report and checksum manifest identify exact evidence files. Report/PPT and

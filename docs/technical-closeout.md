@@ -91,6 +91,14 @@ scikit-learn 1.9.1 and SciPy 1.18.1. Tiny native-library/version differences are
 recorded rather than replacing the original results. Rounded saved-prediction
 metrics are checked separately at 0.0002 tolerance.
 
+Independent reproduction also passed in a fresh local clone of code commit
+`6e7eb0f`: new virtual environment, `uv sync --locked`, all 43 tests, the complete
+selected-model evidence audit and all frozen file checksums. The offline setup
+initially lacked a cached SciPy wheel; downloading the exact locked dependencies
+resolved that setup issue without changing the lockfile. The clean-checkout audit
+is saved as `results/closeout/fresh-checkout-verification.json`; the final handoff
+adds this record and documentation/integrity metadata to that verified code.
+
 The test suite includes 43 tests, covering the original pipeline, DE operators,
 group-complete diagnostic sampling and historical checksum handling. Full
 optimization was not rerun for closeout; all candidate histories were audited and
@@ -112,6 +120,7 @@ were made using the holdout.
 | `results/final/prediction_residuals.png` | Validation-selected demonstration and residuals |
 | `results/final/learning_curve.png` | Three-fold training/validation learning curve |
 | `results/final/verification.json`, `SHA256SUMS` | Audit evidence and frozen artifact integrity |
+| `results/closeout/fresh-checkout-verification.json` | Independent clean-checkout reproduction of code commit `6e7eb0f` |
 
 All four figures were visually inspected after regeneration. Readable labels,
 units, legends, demonstration identity and displayed data were checked.
