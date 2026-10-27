@@ -1,7 +1,5 @@
 """Final holdout evaluation, analysis tables, and plots."""
 
-from __future__ import annotations
-
 import json
 from pathlib import Path
 from typing import Any
@@ -9,6 +7,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import GroupKFold
 
 from concrete_strength.data import FEATURE_COLUMNS, TARGET_COLUMN, compute_sha256, load_processed_data
 from concrete_strength.evaluation import build_svr_pipeline, compute_metrics
@@ -31,29 +30,55 @@ def _mean_std(values: list[float]) -> dict[str, float]:
 
 def _learning_curve(
     df: pd.DataFrame,
-    folds: list[dict[str, Any]],
+    development_indices: list[int],
     params: dict[str, float],
     fractions: list[float],
-) -> list[dict[str, float]]:
+    seed: int = 42,
+) -> list[dict[str, Any]]:
+    """Three-fold diagnostic with nested, randomly ordered whole training groups.
+
+    Every fold and fraction uses the same fixed model parameters. No holdout
+    rows are eligible, and no tuning is performed for this diagnostic.
+    """
+    if not fractions or any(not 0 < fraction <= 1 for fraction in fractions):
+        raise ValueError("Learning-curve fractions must be in (0, 1]")
     X = df[FEATURE_COLUMNS].to_numpy(dtype=float)
     y = df[TARGET_COLUMN].to_numpy(dtype=float)
+    dev = np.asarray(development_indices, dtype=int)
+    groups = df["group_id"].to_numpy()
+    fold_subsets = []
+    for number, (train, val) in enumerate(GroupKFold(3).split(dev, groups=groups[dev])):
+        train_idx, val_idx = dev[train], dev[val]
+        shuffled_groups = np.random.default_rng(seed + number).permutation(np.unique(groups[train_idx]))
+        fold_subsets.append((train_idx, val_idx, shuffled_groups))
+
     rows = []
     for fraction in fractions:
-        scores = []
-        for fold in folds:
-            train_idx = np.asarray(fold["train_indices"], dtype=int)
-            val_idx = np.asarray(fold["val_indices"], dtype=int)
-            count = max(2, int(round(len(train_idx) * fraction)))
+        details = []
+        for number, (train_idx, val_idx, shuffled_groups) in enumerate(fold_subsets):
+            count = max(1, int(round(len(shuffled_groups) * fraction)))
+            selected_groups = shuffled_groups[:count]
+            selected = train_idx[np.isin(groups[train_idx], selected_groups)]
             model = build_svr_pipeline(**params)
-            model.fit(X[train_idx[:count]], y[train_idx[:count]])
-            scores.append(compute_metrics(y[val_idx], model.predict(X[val_idx]))["rmse"])
+            model.fit(X[selected], y[selected])
+            details.append({
+                "fold": number,
+                "training_indices": selected.tolist(), "validation_indices": val_idx.tolist(),
+                "training_group_count": count,
+                "validation_group_count": len(np.unique(groups[val_idx])),
+                "training_row_count": len(selected), "validation_row_count": len(val_idx),
+                "train_rmse": compute_metrics(y[selected], model.predict(X[selected]))["rmse"],
+                "validation_rmse": compute_metrics(y[val_idx], model.predict(X[val_idx]))["rmse"],
+            })
         rows.append({
             "fraction": fraction,
-            "training_rows_mean": round(float(np.mean([
-                max(2, int(round(len(fold["train_indices"]) * fraction))) for fold in folds
-            ])), 2),
-            "rmse_mean": round(float(np.mean(scores)), 4),
-            "rmse_std": round(float(np.std(scores, ddof=1)), 4),
+            "training_rows_mean": round(float(np.mean([d["training_row_count"] for d in details])), 2),
+            "training_groups_mean": round(float(np.mean([d["training_group_count"] for d in details])), 2),
+            "train_rmse_mean": _mean_std([d["train_rmse"] for d in details])["mean"],
+            "train_rmse_std": _mean_std([d["train_rmse"] for d in details])["std"],
+            "rmse_mean": _mean_std([d["validation_rmse"] for d in details])["mean"],
+            "rmse_std": _mean_std([d["validation_rmse"] for d in details])["std"],
+            "folds": details,
         })
     return rows
 
@@ -62,7 +87,7 @@ def _save_plots(
     output_dir: Path,
     runs: list[dict[str, Any]],
     summary: dict[str, Any],
-    learning_curve: list[dict[str, float]],
+    learning_curve: list[dict[str, Any]],
 ) -> None:
     plt.style.use("seaborn-v0_8-whitegrid")
 
@@ -113,11 +138,16 @@ def _save_plots(
     plt.close(fig)
 
     fig, ax = plt.subplots(figsize=(7, 5))
-    x = [row["training_rows_mean"] for row in learning_curve]
+    x = [row["training_groups_mean"] for row in learning_curve]
     y = [row["rmse_mean"] for row in learning_curve]
     err = [row["rmse_std"] for row in learning_curve]
-    ax.errorbar(x, y, yerr=err, marker="o", capsize=4)
-    ax.set(title="Development-only learning curve (best DE parameters)", xlabel="Training rows per fold", ylabel="Validation RMSE (MPa)")
+    ax.errorbar(x, y, yerr=err, marker="o", capsize=4, label="Validation")
+    ax.errorbar(x, [row["train_rmse_mean"] for row in learning_curve],
+                yerr=[row["train_rmse_std"] for row in learning_curve],
+                marker="s", capsize=4, label="Training")
+    ax.set(title="Development-only learning curve (3 group-disjoint folds)",
+           xlabel="Training groups per fold", ylabel="RMSE (MPa)")
+    ax.legend(title="Mean ± sample SD")
     fig.tight_layout()
     fig.savefig(output_dir / "learning_curve.png", dpi=180)
     plt.close(fig)
@@ -149,7 +179,7 @@ def finalize_experiments(
             run["best_decoded_params"],
         )
         actuals = df.iloc[manifest["holdout_indices"]][TARGET_COLUMN].astype(float).tolist()
-        predictions = evaluation["holdout_evaluation"]["holdout_predictions"] if "holdout_evaluation" in evaluation else evaluation["holdout_predictions"]
+        predictions = evaluation["holdout_predictions"]
         de_runs.append({
             "optimizer": run["optimizer"], "seed": run["seed"], "budget": run["budget"],
             "best_cv_rmse": run["best_cv_rmse"], "best_log_params": run["best_log_params"],
@@ -181,7 +211,7 @@ def finalize_experiments(
     }
     demonstration = min(de_runs, key=lambda run: (run["best_cv_rmse"], run["optimizer"], run["seed"]))
     learning_curve = _learning_curve(
-        df, manifest["cv_folds"], demonstration["best_decoded_params"], [0.25, 0.5, 0.75, 1.0],
+        df, manifest["development_indices"], demonstration["best_decoded_params"], [0.25, 0.5, 0.75, 1.0],
     )
     final = {
         "stage": "final_holdout_evaluation",
@@ -198,4 +228,35 @@ def finalize_experiments(
     }
     (output_dir / "final_results.json").write_text(json.dumps(final, indent=2) + "\n", encoding="utf-8")
     pd.DataFrame(metric_rows).to_csv(output_dir / "metrics.csv", index=False)
-    _save_plots(output_dir, de_runs, final, learning_curve)
+    _save_plots(output_dir, de_runs + random_runs, final, learning_curve)
+
+
+def refresh_diagnostics(output_dir: Path = Path("results/final")) -> None:
+    """Correct the learning curve and redraw saved evidence without holdout refits.
+
+    Existing experiment selections, metrics, predictions and original provenance
+    are preserved. Changes to tracked artifacts remain recoverable through Git.
+    """
+    final_path = output_dir / "final_results.json"
+    final = json.loads(final_path.read_text(encoding="utf-8"))
+    random_result = json.loads(Path("results/baseline/random_search_results.json").read_text())
+    df, manifest = load_processed_data(
+        "data/processed/concrete_cleaned.csv", "data/processed/splits_manifest.json",
+    )
+    curve = _learning_curve(df, manifest["development_indices"],
+                            final["demonstration"]["best_decoded_params"], [0.25, 0.5, 0.75, 1.0])
+    final["learning_curve_development_only"] = curve
+    final["diagnostic_correction"] = {
+        "reason": "Replace ordered row prefixes/five folds with nested whole-group samples/three folds; add training RMSE",
+        "seed": 42, "fractions": [0.25, 0.5, 0.75, 1.0], "cv_folds": 3,
+        "model_selection_changed": False, "holdout_metrics_changed": False,
+        "provenance": provenance(Path("configs/experiment.json"),
+                                 Path("data/processed/concrete_cleaned.csv"),
+                                 Path("data/processed/splits_manifest.json")),
+        "stage3_source_sha256": compute_sha256(Path("src/concrete_strength/stage3.py")),
+    }
+    _save_plots(output_dir, final["runs"] + random_result["runs"], final, curve)
+    pd.DataFrame([{k: v for k, v in row.items() if k != "folds"} for row in curve]).to_csv(
+        output_dir / "learning_curve.csv", index=False,
+    )
+    final_path.write_text(json.dumps(final, indent=2, allow_nan=False) + "\n", encoding="utf-8")

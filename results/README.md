@@ -10,6 +10,10 @@ The final evidence package is in [`final/`](final/):
 - `prediction_residuals.png`: actual/predicted and residual diagnostics for the
   validation-selected best DE demonstration (seed 11).
 - `learning_curve.png`: development-only learning curve for that demonstration.
+- `learning_curve.csv`: corrected three-fold diagnostic with whole training groups,
+  training/validation RMSE and group/row counts; fold assignments are in the JSON.
+- `verification.json`: evidence checks and selected-model CV/holdout reproduction.
+- `SHA256SUMS`: portable checksums of the frozen final evidence files.
 
 ## Reproduction
 
@@ -18,9 +22,20 @@ From the repository root, with the locked environment:
 ```powershell
 uv sync --locked
 uv run pytest -q
-uv run concrete-strength de-search
-uv run concrete-strength finalize-experiments
+uv run concrete-strength verify-evidence
 ```
+
+The saved experiment outputs are already present. The commands below deliberately
+rerun training into new directories rather than overwriting the frozen evidence:
+
+```sh
+uv run concrete-strength de-search --output-dir results/de-rerun
+uv run concrete-strength finalize-experiments --de-path results/de-rerun/de_search_results.json --output-dir results/final-rerun
+```
+
+To regenerate the corrected diagnostic and redraw plots from existing selections,
+use `uv run concrete-strength refresh-diagnostics`. This intentionally updates
+tracked diagnostic files without changing saved model selections or holdout scores.
 
 `de-search` is validation-only. It writes five 300-call DE runs and refuses to
 overwrite an existing result. `finalize-experiments` refits those frozen
@@ -38,3 +53,10 @@ validation selections once on the full development set and evaluates the fixed
 The DE mean holdout RMSE is 0.12% lower than Random Search and 37.2% lower
 than the default SVR. These are results on one fixed holdout and five optimizer
 seeds, not a significance or state-of-the-art claim.
+
+For report/PPT preparation, use [the frozen technical handoff](../docs/technical-closeout.md).
+The 27 October correction changes only learning-curve sampling/diagnostic evidence
+and plot rendering; original model selections, holdout metrics and predictions are
+preserved. Convergence now includes both methods' five histories. Historical
+Windows provenance is retained, including its package versions and CRLF checksums;
+the verifier explicitly recognizes Windows path separators and text line endings.

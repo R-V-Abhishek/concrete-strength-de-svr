@@ -252,10 +252,47 @@ are in [`results/README.md`](../results/README.md).
 
 ---
 
+## Technical closeout before Stage 4 — 27 October 2026
+
+- **Owner:** R V Abhishek; closes f1, f2 and f3 requested after Ullas's handoff.
+- Corrected the learning curve to three group-disjoint development folds, nested
+  complete-group samples, fixed demonstration parameters and both training and
+  validation RMSE. Seed 42 + fold index; fractions 0.25/0.50/0.75/1.0. Saved fold
+  row IDs and group counts, plus `results/final/learning_curve.csv`.
+- Validation RMSE decreases from 8.3838 to 5.9784 MPa as diagnostic training data
+  increase. Training RMSE increases from 2.7596 to 3.7728 MPa. This diagnostic
+  does not change any five-fold search, holdout metric, candidate or prediction.
+- Redrew and visually inspected all four plots. Convergence now includes all
+  five Random Search traces as well as all five DE traces.
+- `verify-evidence` audits all 3,000 candidate records, original inputs/splits,
+  selections, saved predictions, CSV rows, metric means/SDs and corrected groups.
+  It also recomputes CV fitness and refits all five fixed DE selections.
+- The locked macOS environment reproduces original Windows holdout metrics with
+  maximum absolute difference 0.0002; maximum selected CV RMSE difference is
+  0.0001. Predeclared reproduction tolerance: 0.001. Original reported scores
+  remain authoritative; no additional hyperparameter search was performed.
+- Historical Windows path separators and CRLF text checksums needed explicit
+  interpretation. Reconstructing CRLF bytes matches the historical hashes;
+  the raw XLS matches exactly. Actual content changes still fail verification.
+  Added `.gitattributes` to keep future text evidence checksums portable.
+- Test suite: **43 passing tests**, including complete-group sampling, nesting,
+  holdout exclusion and checksum portability regression checks.
+- Exact correction/check commands: `uv sync --locked`, `uv run pytest -q`,
+  `uv run concrete-strength refresh-diagnostics`,
+  `uv run concrete-strength verify-evidence`. Sandbox runs additionally set
+  `UV_CACHE_DIR=/tmp/bio-aat-uv-cache` and `MPLCONFIGDIR=/tmp/bio-aat-mpl`;
+  these are local writable cache paths rather than project requirements.
+- Frozen report inputs and reproduction steps: `docs/technical-closeout.md`.
+  The technical tag is `technical-closeout-2026-10-27`; the saved verification
+  report and checksum manifest identify exact evidence files. Report/PPT and
+  administrative submission requirements remain pending Stage 4.
+
+---
+
 ## Stage 4: Project Report, Presentation & Submission Verification
 
 - **Owner:** Vedantha V V (USN: 1BM23CD069)
-- **Status:** Pending Stage 3 handoff
+- **Status:** Ready for report/PPT from the frozen technical handoff
 - **Tasks Assigned:** T14, T15, T16, T17, T18
 
 *(To be filled by Stage 4 owner)*

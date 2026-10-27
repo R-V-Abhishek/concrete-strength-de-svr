@@ -100,3 +100,13 @@ Stage 1's technical handoff passes; this does not independently verify registrat
 The existing XLS reader emits a pandas deprecation warning; it currently loads correctly. Preserve the functioning reader and locked versions for this submission rather than changing the data ingestion path during DE work.
 
 References: the original DE paper by Storn and Price (1997), DOI `10.1023/A:1008202821328`; UCI dataset DOI `10.24432/C5PK67`; existing scikit-learn evaluator and original dataset readme. No external optimization library replaces the implemented operators.
+
+## Technical closeout — 27 October 2026
+
+The three-fold learning-curve protocol is now implemented using nested samples
+of whole training groups, with both training and validation errors. Original
+search/holdout results are preserved. Use `docs/technical-closeout.md` and the
+`technical-closeout-2026-10-27` tag for report/PPT preparation.
+`uv run concrete-strength verify-evidence` validates the saved package and
+reproduces the fixed selected models in the locked environment. The report
+records explicit Windows path/CRLF handling and cross-environment tolerances.
