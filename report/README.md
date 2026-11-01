@@ -1,15 +1,9 @@
-# Project report
+# Concrete Strength DE–SVR report
 
-Place this project's editable report sources and final report here. Stage 3
-technical evidence is complete and is available in
-[`../results/final/`](../results/final/).
+Self-contained editable LaTeX report. The BMSCE formatting package, institutional logo, figures and bibliography are included here; the external central template library is not required to build this copy.
 
-Follow `../docs/submission-checklist.md` for required sections. The professor's example is `../references/examples/stock-price-ga-lstm-report.pdf`; its subject, authors, certificate details, and results belong to a different project.
+From the repository root, build with `sh report/scripts/build.sh`. XeLaTeX, latexmk, Biber, biblatex and biblatex-ieee are required. The delivered PDF is `concrete-strength-de-svr-report.pdf`. Metadata is in `metadata.tex`; content is split by chapter. Figures and generated tables derive from frozen `results/final/` evidence. See `../docs/deliverable-validation.md` for checks and scope.
 
-The report has not been drafted yet. Vedantha owns Stage 4 report creation.
-Use the required sections in [`../docs/submission-checklist.md`](../docs/submission-checklist.md),
-the source-of-truth summary in [`../results/README.md`](../results/README.md),
-the full provenance and per-run data in `../results/final/final_results.json`,
-and the four plots in `../results/final/`. Team details, certificate
-information, signatures, repository access, and submission evidence remain
-administrative items to verify before release.
+Uses BMSCE typography and margins with the stock-price example's section order, adapted to concrete prediction. Preserves headings for unperformed analyses and explicitly states their limits. Adds the required Comparative Performance Analysis, Applications and Case Studies, References and GitHub Repo Link sections absent or incomplete in the sample. Certificate signature fields remain blank for actual endorsement.
+
+To use Overleaf, upload this directory’s contents, select XeLaTeX and use `main.tex` as the main document. Times New Roman must be available in the build environment.

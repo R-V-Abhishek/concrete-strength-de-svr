@@ -1,0 +1,23 @@
+\chapter{Nature-Inspired Algorithms: Detailed Study}
+\section{Overview of Nature-Inspired Optimization}
+Nature-inspired algorithms use mechanisms motivated by evolution, collective behavior or physical processes. Common families include evolutionary methods such as GA and DE, swarm methods such as PSO and ACO, and physical-process methods such as simulated annealing. The classification describes motivation; it does not provide a ranking of performance.
+\section{Genetic Algorithm: In-Depth Analysis}
+A GA maintains a population of encoded candidates, selects parents, applies crossover and mutation, and selects survivors. Its representation may encode discrete or continuous choices. Selection favors better fitness while random variation permits new combinations. Design choices include representation, parent selection, variation rates and survivor policy \cite{holland}.
+
+GA provides a useful conceptual comparison with DE. It is not an implemented comparator in this project. DE differs from a conventional GA by constructing continuous perturbations from differences among population members rather than requiring the same chromosome operators used in conventional genetic representations.
+\section{Particle Swarm Optimization}
+PSO updates candidate positions using velocity influenced by individual and social information \cite{pso}. It provides an alternative derivative-free strategy for continuous parameters. This study does not implement PSO, tune its controls or report its performance. Such a comparison would require the same folds and budget discipline used for the existing methods.
+\section{Ant Colony Optimization}
+ACO models constructive search with probabilistic choices influenced by pheromone-like information \cite{aco}. It is well known for combinatorial settings. Adapting it to continuous SVR hyperparameters requires additional representation choices, so it is outside this project's fixed scope.
+\section{Simulated Annealing}
+Simulated annealing probabilistically accepts some worsening moves according to a temperature schedule, allowing exploration beyond strictly greedy local moves \cite{annealing}. It is included as a physical-process-inspired method. Its schedule and proposal distribution would need an independently specified protocol before comparison.
+\section{Differential Evolution}
+For target vector $\mathbf{x}_i$, choose distinct indices $r_1,r_2,r_3$ that exclude $i$. Differential mutation computes
+\begin{equation}\mathbf{v}_i=\mathbf{x}_{r_1}+F(\mathbf{x}_{r_2}-\mathbf{x}_{r_3}).\end{equation}
+Coordinates are clipped to their bounds. Binomial crossover creates a trial with
+\begin{equation}u_{ij}=\begin{cases}v_{ij},&r_j<CR\ \text{or}\ j=j_{\mathrm{rand}},\\x_{ij},&\text{otherwise}.\end{cases}\end{equation}
+The forced index ensures at least one coordinate comes from the mutant. Greedy selection accepts $\mathbf{u}_i$ when its fitness is no worse than that of $\mathbf{x}_i$. The implementation uses a frozen source population within a generation and commits replacements after that generation, matching deferred updating \cite{storn}.
+\section{Why Differential Evolution for SVR Optimization?}
+The search has three real-valued coordinates and a fitness obtained from model fitting. DE supports this continuous representation without requiring derivatives. Its operators can be implemented and tested directly within the course scope. The choice is justified by fit to the task and implementation transparency, not by an assumed accuracy advantage over random search.
+\section{Hybrid Approaches}
+DE--SVR is a hybrid of an outer optimizer and an inner supervised estimator. The search finds parameter settings; SVR learns the prediction function. More elaborate combinations, including feature selection, adaptive controls and ensembles, are possible future experiments. They are not part of the reported evidence.

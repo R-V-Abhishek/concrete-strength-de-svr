@@ -1,0 +1,23 @@
+\chapter{Introduction}
+\section{Background and Motivation}
+Concrete compressive strength depends on the interaction of constituent materials and curing age. The relationship is not adequately described by treating every ingredient as an independent linear contribution. The UCI dataset provides measurements of cement, blast furnace slag, fly ash, water, superplasticizer, coarse aggregate, fine aggregate and age, together with measured compressive strength \cite{uci,yeh}. A predictive model can support the study of these relationships within the range represented by the data.
+
+This project treats strength prediction as supervised numerical regression. It does not replace physical testing or certify a mixture for construction. The immediate goal is to compare ways of configuring one established regression model under a reproducible protocol. Keeping the model and data fixed makes the effect of hyperparameter selection easier to interpret.
+
+RBF-SVR is a suitable compact model for this exercise because it captures nonlinear relationships through a kernel and exposes a small set of influential hyperparameters \cite{svr}. Default values provide a reproducible starting point, but they need not match the numerical scale or geometry of this dataset. Automated search therefore forms the optimization component of the project.
+\section{Problem Statement}
+The task is to predict compressive strength $y$ in MPa from an eight-dimensional vector $\mathbf{x}$ of ingredients and age. The optimization task is to select $C$, $\gamma$ and $\epsilon$ for RBF-SVR by minimizing mean development-fold RMSE. The comparison must distinguish improvement from tuning itself from improvement specifically attributable to the DE search strategy.
+
+A useful result requires identical evaluation folds, fold-local preprocessing, an equal candidate budget and a comparator that explores the same parameter space. Otherwise differences in data leakage, search range or computational effort can be mistaken for an algorithm advantage.
+\section{Research Objectives}
+\begin{enumerate}
+\item Validate the dataset schema, units, missingness and repeated input combinations.
+\item Establish a reproducible default-SVR baseline and a comparable Random Search baseline.
+\item Implement DE mutation, crossover, selection and bound handling explicitly.
+\item Compare validation and holdout RMSE, MAE and $R^2$ using five predefined optimizer seeds.
+\item Preserve candidate histories, selected configurations, predictions, diagnostics and provenance for independent inspection.
+\end{enumerate}
+\section{Contributions}
+The work contributes an auditable DE/rand/1/bin implementation integrated with a shared CV evaluator, a group-disjoint split contract, and a complete frozen evidence package. It also provides a corrected development learning curve based on nested whole-group samples, including both training and validation error. These are engineering and experimental contributions; this report does not claim a new optimization algorithm or a universally superior prediction method.
+\section{Paper Organization}
+The literature review is followed by theoretical background, a detailed study of nature-inspired algorithms, methodology and implementation, experimental setup, and results and discussion. Comparative performance analysis and applications place the measurements in context. The report closes with the conclusion, future work, references and repository link.

@@ -300,3 +300,43 @@ are in [`results/README.md`](../results/README.md).
 - **Tasks Assigned:** T14, T15, T16, T17, T18
 
 *(To be filled by Stage 4 owner)*
+
+
+## Stage 4 deliverable preparation — 1 November 2026
+
+- Prepared the 35-page editable LaTeX report and 18-slide PPTX from frozen evidence; kept the source examples unchanged. Used the stock-price section sequence with concrete/DE/SVR adaptations and explicit statements for unperformed analyses.
+- Reorganized the supplied thesis folder into `/Users/rva/Projects/BMSCE_Academic_Templates`, preserving every original in `archive/original-supplied-folder/`. Added separate self-contained course-report and thesis starters plus an editable PPT template.
+- User confirmed Prof. Manoj Kumar (Assistant Professor), HOD Dr. Shyamala G, course 23DS7BSBIO and AY 2026–27. The user explicitly requested the source `.tex` border geometry and line weight on **all** pages; initially used 1.5pt at 0.5-inch insets, then updated to 1.8pt medium grey with 6pt rounded corners at the user’s request, with running-header clearance. PPT hierarchy was improved following user review.
+- Project report compiled using XeLaTeX, latexmk and Biber with no final warnings, undefined references or overfull boxes. Rendered all pages and slides and checked layout, metadata and displayed results. Both generic starters compiled separately without warning/overfull output after correcting the declaration layout.
+- First-party PPTX finalization passed package, dimension, font and editable-table checks with zero findings/warnings. Artifact Tool import itself was unavailable because its Node adapter was missing; that check was explicitly skipped, and the original deck was edited with python-pptx. Native Microsoft PowerPoint execution was not performed.
+- Checked all ten report seed rows against the frozen CSV, PPT aggregate cells against the frozen JSON, theme-byte preservation, all 35 border drawing streams and A4 page geometry. All nine technical evidence checksums passed; no training, new searches or changes to frozen results were performed.
+- Commands: `TEXMFHOME=/tmp/bmsce-texmf BIBER=/tmp/bmsce-biber/bin/universal-darwin/biber sh report/scripts/build.sh`; `uv run --no-project --python <bundled-runtime> python presentation/scripts/build_presentation.py`; first-party finalization; `pdftoppm`; `soffice --headless --convert-to pdf`; `shasum -a 256 -c results/final/SHA256SUMS`.
+- The existing global tooling and project dependency lockfile were preserved. Missing TeX packages/Biber were used from temporary directories. Detailed outputs and exact validation boundaries: `docs/deliverable-validation.md` and `docs/validation/`.
+- Local deliverables are prepared; actual signatures, professor access, registration, Drive upload and presentation remain unverified. No external upload/message or Git push was performed.
+
+
+### Border refinement — 1 November 2026
+
+At the user's request, replaced the single grey border with a closely spaced double border on every page: 2.4pt outer and 1.2pt inner lines, both `black!55`, inset 0.5 and 0.55 inches, with 6pt and 3pt rounded corners. Updated the central canonical style and both starters, rebuilt the report and starter previews, and verified both drawing layers on all 35 report pages. Text geometry and pagination remain unchanged.
+
+
+### Reference corrections — 1 November 2026
+
+Applied the user's reference review after checking the primary UCI, MIT Press and JMLR pages. Changed the dataset citation to UCI's recommended 1998 (2007 is its deposit date). Used a dataset bibliography entry so IEEE prints the year and DOI. Updated the presentation's dataset year, including its editable source. Cited Holland's linked MIT Press edition as 1992 with the full subtitle and an explicit original-publication note for 1975. Qualified the Random Search discussion: the paper motivates the baseline and compares with grid/manual search, while this project's evidence establishes the DE comparison. Yeh's paper DOI was already correct; checked the generated PDF hyperlink for literal parentheses and the expected DOI URL.
+
+Rebuilt and rendered the report and presentation; visually reviewed the changed literature/bibliography pages and reference slide. Report remains 35 pages, PPT 18 slides; double borders and all original experimental metrics remain unchanged. Final report log has no warnings, undefined references or overfull boxes. First-party PPT finalization and the complete deliverable checks passed. The current receipt is `docs/validation/presentation-finalization.json`, with the citation revision receipt also retained as `presentation-reference-finalization.json`.
+
+
+### Remove bibliography access dates — 1 November 2026
+
+Removed both `urldate` fields from the dataset and scikit-learn bibliography entries at the user's request. Rebuilt the report, checked that no “Accessed” or “Nov. 1” text remains anywhere, and inspected the final reference-page layout. Publication years, citations, links, experimental evidence and the 35-page count are preserved.
+
+
+### Em-dash removal — 1 November 2026
+
+Replaced the report's two remaining em dashes in bibliography titles with a colon and a comma, as appropriate. The editable BibLaTeX source was updated and the report rebuilt. Full PDF and slide-text checks confirm zero em dashes in either deliverable; the PPT already contained none. Numeric ranges, publication details, results, layout and double borders remain unchanged. Rechecked the reference-page rendering and clean TeX log; access dates remain removed.
+
+
+### Repository release preparation — 1 November 2026
+
+Prepared all project deliverables, editable sources, local BMSCE style/assets, reusable PPT template and validation records for Git. Added isolated `uv run --script` dependencies for the presentation builder and a portable artifact validator without changing the experiment manifest or lockfile. Both commands were executed using their pinned dependencies. An isolated PPT rebuild matches all delivered slide text, native table values and object geometry; the portable validator passes. All nine frozen evidence checksums and `git diff --check` pass. Remote `main` was fetched before creating `codex/report-presentation`; the project follows its existing pull-request workflow. Temporary build directories, downloaded tools and the unrelated original thesis archive are excluded from this project release.

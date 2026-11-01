@@ -15,7 +15,7 @@ Bio-Inspired Algorithms semester AAT project for a four-member team.
 
 Evaluate whether Differential Evolution (DE) improves the hyperparameters of an RBF Support Vector Regression (SVR) model for predicting concrete compressive strength. Compare default SVR, random-search tuning, and DE tuning using the same data splits and comparable search budgets.
 
-Status: Stages 1–3 and the technical closeout are complete. Vedantha can prepare the report and presentation from the [frozen technical handoff](docs/technical-closeout.md). Original final model selections and holdout results are preserved; the learning-curve diagnostic has been corrected and the evidence audited. Pilot results remain separate from final performance claims.
+Status: Stages 1–3 and the technical closeout are complete. The [35-page report](report/concrete-strength-de-svr-report.pdf) and [18-slide editable presentation](presentation/concrete-strength-de-svr-presentation.pptx) have been prepared and locally validated from the frozen evidence. See [deliverable validation](docs/deliverable-validation.md) for checks and remaining signatures, access and submission tasks. Original model selections, holdout results and technical evidence are preserved.
 
 ## Repository layout
 

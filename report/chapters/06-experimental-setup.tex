@@ -1,0 +1,24 @@
+\chapter{Experimental Setup and Test Functions}
+\section{Experimental Configuration}
+The main experiment fixes the dataset, holdout, development folds, model family, search bounds and candidate budget before final DE evaluation. Table~\ref{tab:config} summarizes the controls. The two tuned methods receive $2\times5\times300\times5=15{,}000$ tuning-fold fits in total, excluding baselines, final refits and diagnostics.
+\begin{table}[htbp]\centering\caption{Final experimental configuration.}\label{tab:config}\begin{tabularx}{\textwidth}{lX}\toprule Setting&Value\\\midrule Development / holdout rows&826 / 204\\Development / holdout groups&796 / 200\\Development fitness&Mean RMSE, five group-disjoint folds\\Optimizer seeds&11, 22, 33, 44, 55\\Candidate budget&300 per method per seed, including initialization\\DE population / generations&15 / 19 after initialization\\Mutation / crossover&0.8 / 0.9\\Search coordinates&$\log_{10}C\in[-2,4]$, $\log_{10}\gamma\in[-5,1]$; $\log_{10}\epsilon\in[-3,1]$\\Selection&Lowest development CV RMSE\\\bottomrule\end{tabularx}\end{table}
+\section{Baseline Models}
+Default SVR measures the performance of an untuned configuration. Random Search samples uniformly from the same logarithmic bounds used by DE and receives the same 300 calls per seed. It is an active tuning baseline, not a deliberately weak comparator \cite{bergstra}. The difference between default and tuned results measures the value of tuning; the difference between the two tuned methods addresses search strategy.
+\section{Test Functions and Benchmarks}
+Before relying on a model-fitting objective, the optimizer was checked on synthetic functions with known minima. Sphere is
+\begin{equation}f(\mathbf{x})=\sum_j x_j^2,\end{equation}
+and Rastrigin is
+\begin{equation}f(\mathbf{x})=10d+\sum_j\left[x_j^2-10\cos(2\pi x_j)\right].\end{equation}
+Both have global minimum zero at the origin. Sphere tests progress on a smooth landscape; Rastrigin adds many local minima. These checks validate behavior on simple objectives and do not predict concrete-strength generalization.
+\input{tables/synthetic}
+The synthetic results remain separate from final regression metrics. In particular, a better Sphere value cannot be presented as a strength-prediction accuracy result.
+\section{Cross-Validation Strategy}
+Identical eight-feature tuples define groups for both outer splitting and inner folds. The held-out groups never appear in development folds. Within a fold, the scaler is fitted only to training rows. The fixed split manifest retains row IDs and group IDs so the isolation contract can be checked independently.
+
+The historical baseline and Random Search holdout evaluations occurred in Stage 1. Final DE candidates were selected using development validation, but the whole project cannot be described as a prospectively untouched holdout study. This limitation is retained in the interpretation.
+\section{Sensitivity Analysis}
+The study varies optimizer seeds under fixed controls. It does not perform a factorial sensitivity study of population size, mutation weight or crossover rate. Likewise, it does not establish causal importance of individual hyperparameters. Learning-curve diagnostics examine the effect of increasing whole-group training subsets while using fixed demonstration parameters.
+\section{Statistical Significance Testing}
+No confirmatory significance test is claimed. Five optimizer seeds share the same data partition and are not five independent datasets. Their SDs describe stochastic search variability. Given the small DE--Random Search difference, an assertion of statistically significant superiority would require additional design and evidence.
+\section{Computational Efficiency Metrics}
+Each history retains call counts and elapsed times, while final records retain refit times and environment provenance. Equal objective budgets make evaluation effort comparable; wall-clock times remain dependent on selected parameters and execution environment. Timing observations are not mixed across Windows experiments and macOS verification to manufacture a speed comparison.

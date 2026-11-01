@@ -1,0 +1,47 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bmsce}[2026/11/01 BMSCE academic formatting]
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage[a4paper,margin=1in,headheight=16pt,headsep=12pt]{geometry}
+\usepackage{setspace,titlesec,fancyhdr,graphicx,amsmath,amssymb,booktabs,tabularx,longtable,float}
+\usepackage{algorithm,algpseudocode,caption,etoolbox,tikz,eso-pic,listings,xcolor}
+\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
+\usepackage[hidelinks]{hyperref}
+\onehalfspacing
+\setlength{\parindent}{0.5in}\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}\raggedbottom\widowpenalty=10000\clubpenalty=10000
+\titleformat{\chapter}[display]{\normalfont\bfseries\fontsize{14}{17}\selectfont}{\chaptername\ \thechapter}{8pt}{\fontsize{14}{17}\selectfont}
+\titlespacing*{\chapter}{0pt}{0pt}{16pt}
+\titleformat{\section}{\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsection}{1em}{}
+\captionsetup{font={small,stretch=1},labelfont=bf}
+\AtBeginEnvironment{quote}{\singlespacing}
+\numberwithin{equation}{chapter}\numberwithin{algorithm}{chapter}
+\lstset{basicstyle=\small\ttfamily,breaklines=true,columns=fullflexible,frame=single,showstringspaces=false}
+\newcommand{\ProjectTitle}{Project title}
+\newcommand{\ShortTitle}{Project short title}
+\newcommand{\DocumentType}{Project report}
+\newcommand{\CourseName}{Course name}
+\newcommand{\CourseCode}{Course code}
+\newcommand{\AcademicYear}{20XX--XX}
+\newcommand{\GuideName}{Guide name}
+\newcommand{\GuideDesignation}{Designation}
+\newcommand{\HODName}{Head of Department}
+\newcommand{\DepartmentName}{Computer Science and Engineering (Data Science)}
+\newcommand{\StudentCover}{Student Name (USN)}
+\newcommand{\StudentRows}{1 & Student Name & USN & \\\hline}
+\newcommand{\RepositoryURL}{https://example.org/replace-with-repository}
+\newif\ifBMSCEBorder\BMSCEBordertrue
+\AddToShipoutPictureBG{\ifBMSCEBorder\begin{tikzpicture}[remember picture,overlay]\draw[line width=2.4pt,draw=black!55,rounded corners=6pt]
+  ([xshift=0.5in,yshift=-0.5in]current page.north west) rectangle
+  ([xshift=-0.5in,yshift=0.5in]current page.south east);
+\draw[line width=1.2pt,draw=black!55,rounded corners=3pt]
+  ([xshift=0.55in,yshift=-0.55in]current page.north west) rectangle
+  ([xshift=-0.55in,yshift=0.55in]current page.south east);\end{tikzpicture}\fi}
+\fancypagestyle{bmsce}{\fancyhf{}\fancyhead[L]{\small\ShortTitle}\fancyfoot[L]{\fontsize{8}{10}\selectfont Dept. of CSE (Data Science), BMSCE}\fancyfoot[C]{\small\AcademicYear}\fancyfoot[R]{\small\thepage}\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0.4pt}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[L]{\fontsize{8}{10}\selectfont Dept. of CSE (Data Science), BMSCE}\fancyfoot[C]{\small\AcademicYear}\fancyfoot[R]{\small\thepage}\renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0.4pt}}
+\newcommand{\InstitutionHeading}{\begin{center}{\large\bfseries B.M.S. COLLEGE OF ENGINEERING}\\(Autonomous College under VTU)\\Bull Temple Road, Basavangudi, Bengaluru -- 560019\end{center}}
+\newcommand{\MakeCover}{\pagenumbering{roman}\thispagestyle{empty}\InstitutionHeading\begin{center}\includegraphics[width=0.24\textwidth]{assets/bmsce-logo.png}\\[10pt]\textit{\DocumentType\ on}\\[8pt]{\bfseries\ProjectTitle}\\[12pt]\textit{in partial fulfillment of the requirements for the award of degree}\\[6pt]\textbf{BACHELOR OF ENGINEERING}\\\textit{in}\\\textbf{\DepartmentName}\\[8pt]\textit{by}\\[4pt]\StudentCover\\[12pt]\textbf{Under the Guidance of}\\\GuideName\\\GuideDesignation\\[10pt]\textbf{Department of CSE (Data Science)}\\B.M.S. College of Engineering\\[8pt]\textbf{AY \AcademicYear}\end{center}\clearpage\pagestyle{plain}}
+\newcommand{\MakeCertificate}{\InstitutionHeading\begin{center}\includegraphics[width=0.13\textwidth]{assets/bmsce-logo.png}\\\textbf{Department of \DepartmentName}\\[6pt]{\large\bfseries CERTIFICATE}\end{center}\noindent This is to certify that the project entitled ``\textbf{\ProjectTitle}'' is the work submitted by the following students for \textbf{\CourseName\ (\CourseCode)} during academic year \AcademicYear, under the guidance of \GuideName, \GuideDesignation, Department of \DepartmentName, B.M.S. College of Engineering. The report is submitted in partial fulfillment of the academic requirements of the course.\\[8pt]\begin{center}\textbf{Candidate details}\end{center}\noindent\begin{tabularx}{\textwidth}{|c|X|l|p{2cm}|}\hline\textbf{No.}&\textbf{Student name}&\textbf{USN}&\textbf{Signature}\\\hline\StudentRows\end{tabularx}\par\vspace{1.1cm}\noindent\begin{tabularx}{\textwidth}{X X}\rule{5cm}{0.4pt}&\rule{5cm}{0.4pt}\\Signature of the Guide&Signature of the HOD\\\GuideName&\HODName\\\GuideDesignation&Head of Department\end{tabularx}\\[12pt]\noindent\textbf{Examiners}\\1.\ \rule{6cm}{0.4pt}\hfill\rule{4cm}{0.4pt}\\[8pt]2.\ \rule{6cm}{0.4pt}\hfill\rule{4cm}{0.4pt}\clearpage}
+\newcommand{\MakeDeclaration}{\chapter*{Declaration}\addcontentsline{toc}{chapter}{Declaration}We declare that the work described in ``\ProjectTitle'' was carried out by us under the guidance of \GuideName. Sources and contributions by others are acknowledged through citations. This declaration requires the students' review and signatures.\par\vspace{1cm}\noindent\begin{tabularx}{\textwidth}{|c|X|l|p{2cm}|}\hline No.&Student name&USN&Signature\\\hline\StudentRows\end{tabularx}\\[1cm]Date:\ \rule{4cm}{0.4pt}\hfill Place: Bengaluru\clearpage}
+\newcommand{\BeginMainMatter}{\clearpage\pagenumbering{arabic}\pagestyle{bmsce}}

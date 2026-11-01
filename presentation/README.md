@@ -1,13 +1,7 @@
 # Project presentation
 
-Place this project's editable slides and final PPT here. Stage 3 technical
-evidence is complete; the final presentation should use the measured figures
-and plots in [`../results/final/`](../results/final/).
+`concrete-strength-de-svr-presentation.pptx` contains 18 editable slides adapted from the professor's example. `concrete-strength-de-svr-presentation.pdf` is the rendered offline preview. The reference file in `../references/examples/` remains unchanged.
 
-Follow `../docs/submission-checklist.md` for required slide titles. The professor's example is `../references/examples/stock-price-ga-lstm-presentation.pptx`; preserve it as a reference and create this project's slides separately.
+From the repository root, rebuild with `uv run --script presentation/scripts/build_presentation.py`. Its inline metadata pins python-pptx in an isolated environment without changing the experiment dependencies. It reads the frozen final result JSON and plots; it does not rerun experiments. The reusable `bmsce-presentation-template.pptx` is included alongside the project deck.
 
-The presentation has not been drafted yet. Vedantha owns Stage 4 slide
-creation. Use the required headings in [`../docs/submission-checklist.md`](../docs/submission-checklist.md),
-the final metrics in [`../results/README.md`](../results/README.md), and the
-plots in `../results/final/`. Do not use the stock-price example's identities
-or results.
+Confirmed faculty/course metadata, structural and visual checks, and remaining administrative tasks are recorded in `../docs/deliverable-validation.md`. The metric comparison is an editable table; plot images reproduce the original evidence. All mandatory PPT headings are covered, with Advantages and Limitations on separate slides.
