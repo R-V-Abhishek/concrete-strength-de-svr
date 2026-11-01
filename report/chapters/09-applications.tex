@@ -1,0 +1,9 @@
+\chapter{Applications and Case Studies}
+\section{Applications}
+Within a validated domain, a strength-prediction model can support exploratory comparison of mixture measurements and provide an additional numerical estimate for research. Ingredient quantities and curing age must use the same definitions and units as training. Such estimates should be reviewed alongside physical test results and domain knowledge.
+
+The current model is a research artifact. The project does not demonstrate field deployment, laboratory qualification, mixture optimization or a reduction in cement consumption. Predicting strength from supplied inputs is also different from searching for a mixture that satisfies engineering constraints.
+\section{Case Study: UCI Concrete Compressive Strength}
+The implemented case study uses a single public dataset and a fixed group-disjoint holdout. The demonstration is reproducible from its recorded parameters and dataset partition. Its error should be interpreted at the dataset level and not as a tolerance guarantee for an individual construction decision.
+
+A practical extension would collect external measurements from an identified source and evaluate a frozen model without retuning on that external test set. Until such evidence exists, application claims remain prospective.

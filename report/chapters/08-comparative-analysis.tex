@@ -1,0 +1,9 @@
+\chapter{Comparative Performance Analysis}
+\section{Accuracy and Search Budget}
+Random Search and DE share the same logarithmic bounds, five CV folds, five seed values and 300-call budget. Both tune the same estimator pipeline. The comparison controls opportunity to evaluate candidates, making their accuracy differences more interpretable than comparisons based on unequal search effort.
+
+DE's mean validation RMSE is $5.8797\pm0.0198$ MPa versus $5.9399\pm0.0287$ MPa for Random Search. Holdout means, however, are 6.2250 and 6.2328 MPa respectively. The relative ordering on validation is not sufficient evidence of practically meaningful superiority on holdout.
+\section{Advantages and Limitations}
+DE offers explicit continuous search operators, a compact implementation and consistent bookkeeping. The group-aware pipeline and complete histories make its decisions auditable. It does not require a derivative of CV error with respect to SVR parameters.
+
+Its limitations include many repeated model fits, dependence on parameter bounds and fixed control settings, and a finite search that cannot certify global optimality. Random Search is simpler and achieves almost the same holdout accuracy in this case. The project does not measure deployment latency, certify structural mixtures, or demonstrate transfer to external laboratory data.

@@ -1,0 +1,36 @@
+\chapter{Results and Discussion}
+\section{DE Convergence Analysis}
+Figure~\ref{fig:convergence} shows the saved best-so-far development RMSE histories for both search methods. The horizontal axis counts objective evaluations, including initialization. Curves indicate optimization progress on the fixed development folds, not test accuracy. A lower validation endpoint does not guarantee a lower holdout error on a particular seed.
+\begin{figure}[htbp]\centering\includegraphics[width=\textwidth]{assets/convergence.png}\caption{Development validation convergence at equal candidate budgets.}\label{fig:convergence}\end{figure}
+\section{Optimal Hyperparameter Configuration}
+The best observed validation-selected demonstration is DE seed 11, with CV RMSE 5.8601 MPa. The decoded values are $C=1462.1749$, $\gamma=0.0573784$ and $\epsilon=1.3447436$. ``Optimal'' refers to the best observed candidate in this finite search; no proof of a global optimum is implied. Its holdout RMSE is 6.3712 MPa, MAE 4.2896 MPa and $R^2=0.8244$.
+\section{Prediction Performance}
+Table~\ref{tab:metrics} gives the approved holdout comparison. Tuned values are mean $\pm$ sample SD over five optimizer seeds. Default SVR is one fixed configuration. Every model is evaluated on the same 204 holdout observations.
+\input{tables/aggregate}
+DE improves mean RMSE relative to default by approximately 37.2\%. Its 0.0078 MPa advantage over Random Search is approximately 0.125\% of Random Search RMSE. Both tuned methods therefore provide essentially equivalent holdout performance within this experiment.
+\begin{figure}[htbp]\centering\includegraphics[width=\textwidth]{assets/holdout_rmse_comparison.png}\caption{Holdout RMSE: default SVR and five-seed tuned-model aggregates. Error bars describe optimizer-seed SD.}\label{fig:comparison}\end{figure}
+\section{Temporal Performance Analysis}
+Temporal regime analysis is not applicable to this cross-sectional tabular dataset. Curing age is a predictor rather than a time-ordering rule for samples. No chronological regime or rolling-window result was produced. Age-stratified error analysis could be evaluated in future work under a declared protocol.
+\section{Comparison with Baseline Models}
+The default model's RMSE of 9.9069 MPa and $R^2$ of 0.5755 show the limits of its untuned settings on this partition. Random Search reaches $R^2=0.8319\pm0.0064$ and DE reaches $0.8324\pm0.0060$. The agreement of tuned holdout results is more substantial than their difference. A strong random baseline is necessary to avoid attributing every tuning gain to DE.
+\section{Hyperparameter Importance Analysis}
+The saved search histories contain candidate values and fitness scores, but the project did not perform an independent hyperparameter-importance experiment. Search correlations are influenced by the sampling strategy and interactions among parameters. They would not establish causal importance. No importance ranking is claimed.
+\section{Feature Importance Results}
+No permutation-importance, SHAP or ablation study was performed. An RBF-SVR does not supply directly interpretable linear feature coefficients. The report therefore does not invent an ingredient ranking. Any future explanation study should use development data for design decisions and state the uncertainty of its interpretation.
+\section{Error Analysis}
+Figure~\ref{fig:residuals} presents predictions and residuals for the validation-selected demonstration, DE seed 11. All holdout measurements remain in the figure, including large errors. No post-hoc removal was performed. The plot shows the behavior of this selected configuration; it is not an average of predictions from five models.
+\begin{figure}[htbp]\centering\includegraphics[width=\textwidth]{assets/prediction_residuals.png}\caption{Predictions and residuals for the validation-selected demonstration, DE seed 11.}\label{fig:residuals}\end{figure}
+Residual patterns are descriptive. A plot alone does not establish homoscedasticity, normality or absence of bias. The study reports no Breusch--Pagan test or other unsupported inferential diagnostic.
+\section{Computational Performance}
+The complete search budget is 1,500 candidate evaluations per method, each scored on five development folds. Every attempted candidate is counted. The demonstration's saved final development refit takes 0.4194 seconds in the original experiment environment; this excludes search time and is not an end-to-end runtime claim. The repository retains per-call timing histories for further inspection.
+\section{Robustness Analysis}
+\input{tables/per-seed}
+Across seeds, DE holdout RMSE SD is 0.1104 MPa and Random Search SD is 0.1194 MPa. These values quantify optimization variability on this one holdout. They do not measure robustness to a different dataset, partition, measurement process or concrete source.
+
+The corrected learning curve uses three development-only folds. Within each fold, training subsets are nested samples of complete groups at fractions 0.25, 0.50, 0.75 and 1.00. Parameters remain fixed; there is no retuning or holdout access. Mean validation RMSE declines from 8.3838 to 5.9784 MPa while mean training RMSE rises from 2.7596 to 3.7728 MPa. The remaining gap suggests that the fitted model has lower error on its training subsets than on validation groups.
+\begin{figure}[H]\centering\includegraphics[width=0.78\textwidth]{assets/learning_curve.png}\caption{Three-fold development diagnostic with nested whole-group samples and fixed demonstration parameters.}\label{fig:learning}\end{figure}
+These diagnostic values do not replace the five-fold search objective or provide an additional independent generalization estimate.
+\section{Discussion}
+The most defensible finding is that configuration matters: both tuned methods materially improve default SVR. DE finds slightly lower mean development RMSE, but the advantage almost disappears on holdout. This illustrates why validation optimization progress and independent predictive performance must be reported separately.
+
+The scope remains one dataset, one model, one fixed partition and five optimizer seeds. Historical holdout exposure, finite budgets and environment differences limit interpretation. The evidence supports a reproducible comparison within that scope, rather than a general claim that evolutionary methods outperform random search.

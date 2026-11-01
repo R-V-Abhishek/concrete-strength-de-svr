@@ -1,0 +1,27 @@
+\chapter{Theoretical Background}
+\section{Regression and Generalization}
+A regression model estimates $\hat y=f(\mathbf{x})$ from paired measurements. Training error measures fit to observations used by the estimator; validation error guides hyperparameter selection; holdout error evaluates fixed configurations on a reserved partition. These quantities answer different questions and should not be combined into one score.
+\section{Support Vector Regression}
+Epsilon-SVR balances a regularized function with deviations outside an epsilon-insensitive tube. A standard primal form is
+\begin{equation}\min_{\mathbf{w},b,\xi,\xi^*}\frac{1}{2}\|\mathbf{w}\|^2+C\sum_{i=1}^{n}(\xi_i+\xi_i^*)\end{equation}
+subject to $y_i-\langle\mathbf{w},\phi(\mathbf{x}_i)\rangle-b\leq\epsilon+\xi_i$, $\langle\mathbf{w},\phi(\mathbf{x}_i)\rangle+b-y_i\leq\epsilon+\xi_i^*$ and nonnegative slack variables. Larger $C$ places a larger penalty on violations. Epsilon controls which residuals are ignored by the loss. These controls interact with the kernel and feature scale \cite{smola,svr}.
+\section{Radial Basis Function Kernel}
+The RBF kernel is
+\begin{equation}K(\mathbf{x},\mathbf{x}')=\exp(-\gamma\|\mathbf{x}-\mathbf{x}'\|^2).\end{equation}
+Gamma controls the spatial scale of similarity. A large value can produce a highly local response; a small value produces a broader response. Neither extreme is assumed to be best. Cross-validation is used to select the combination of gamma, regularization and loss tolerance.
+\section{Feature Scaling}
+The scaler transforms a coordinate using statistics estimated on the current fitting subset:
+\begin{equation}z_j=\frac{x_j-\mu_j}{\sigma_j}.\end{equation}
+Ingredients and age have different numerical scales. Standardization prevents an input's raw units alone from dominating Euclidean distances. In each fold the scaler learns $\mu_j$ and $\sigma_j$ from the training rows only; the validation rows are transformed using those same values. The target remains in MPa.
+\section{Differential Evolution Fundamentals}
+Each candidate encodes $\mathbf{z}=(\log_{10}C,\log_{10}\gamma,\log_{10}\epsilon)$. Parameters are decoded with $\theta_j=10^{z_j}$. Uniform search in log coordinates covers multiplicative scales without allocating nearly all samples to large linear values.
+
+The scalar fitness is
+\begin{equation}J(\mathbf{z})=\frac{1}{5}\sum_{k=1}^{5}\mathrm{RMSE}_k(\mathbf{z}).\end{equation}
+Lower fitness is better. This objective contains no runtime term or holdout score.
+\section{Evaluation Metrics}
+For actual values $y_i$, predictions $\hat y_i$ and mean $\bar y$, the metrics are
+\begin{align}\mathrm{RMSE}&=\sqrt{\frac{1}{n}\sum_i(y_i-\hat y_i)^2},\\
+\mathrm{MAE}&=\frac{1}{n}\sum_i|y_i-\hat y_i|,\\
+R^2&=1-\frac{\sum_i(y_i-\hat y_i)^2}{\sum_i(y_i-\bar y)^2}.\end{align}
+RMSE emphasizes large errors; MAE reports mean absolute deviation in MPa; $R^2$ compares squared error with prediction of the holdout mean. Across seeds, the report uses arithmetic means and sample standard deviations with denominator $m-1$. These seed SDs describe search variability on one data partition.

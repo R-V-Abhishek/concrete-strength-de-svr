@@ -1,0 +1,23 @@
+\chapter{Literature Review}
+\section{Concrete Strength Prediction Techniques}
+Yeh's 1998 work studied strength modeling for high-performance concrete using artificial neural networks \cite{yeh}. It provides the domain background for the dataset used here. The dataset is valuable for testing nonlinear regression because inputs include both mixture composition and curing age. Published results from another paper cannot be transferred directly to this study without reproducing its partition and evaluation procedure.
+\section{Machine Learning for Concrete Strength Prediction}
+A supervised model learns an association between measured inputs and target strength. Neural networks and kernel methods offer different representations of nonlinear relationships. This project deliberately evaluates one RBF-SVR model rather than expanding the comparison to many learners. A small scope allows stronger control of preprocessing, data isolation and optimizer budgets.
+
+The dataset is cross-sectional tabular data. Age is a feature describing curing duration; it does not make the rows an ordered financial time series. Temporal forecasting procedures are therefore not appropriate for the fixed tabular evaluation used here.
+\section{Hyperparameter Optimization Methods}
+Hyperparameters are selected outside the model's fitting procedure. Grid search enumerates a fixed lattice; Random Search draws candidates from a specified distribution. Bergstra and Bengio establish Random Search as an effective hyperparameter optimization baseline, motivating its inclusion as a comparator in our DE--SVR experiments \cite{bergstra}. Their paper compares Random Search with grid and manual search; it does not establish an advantage or disadvantage relative to DE. For this experiment, it provides an especially direct control: its parameter bounds, candidate count, folds and seeds match those used by DE.
+
+Equal candidate counts control the number of objective calls, but do not guarantee equal wall-clock duration. Some SVR configurations take longer to fit. Runtime is therefore recorded separately and is not included in the selection objective.
+\section{Evolutionary Algorithms in Engineering Applications}
+Evolutionary methods maintain populations or adapt candidates through stochastic variation and selection. Their appeal is the ability to search without differentiating the objective through the complete model-training pipeline. This is relevant when fitness is a cross-validation score obtained from repeated SVR fitting.
+
+Storn and Price introduced DE as a method for continuous optimization using scaled differences between population vectors \cite{storn}. DE is used here because the three searched coordinates are continuous logarithmic parameters. This choice does not establish that DE is preferable for every engineering problem.
+\section{SVR Optimization with Evolutionary Methods}
+Combining a search method with SVR creates an outer optimization loop around a fixed inner estimator. The candidate determines the estimator parameters; the evaluator fits a fresh pipeline in each development fold and returns mean RMSE. The search never receives holdout predictions as fitness. This separation is more consequential for validity than the label of the outer optimizer.
+
+The present implementation fixes mutation weight, crossover rate and population size before final experiments. No adaptive DE extension, ensemble, feature selector or additional learner is introduced. This keeps attribution of observed changes straightforward.
+\section{Concrete Dataset Studies}
+The UCI repository describes 1,030 instances, eight features and no missing attribute values \cite{uci}. Ingredient quantities are measured in kilograms per cubic metre, age in days, and strength in MPa. Repeated complete input tuples occur in the local data. Random row splitting could place identical inputs on both sides of an evaluation boundary, so this project groups those tuples before splitting.
+\section{Research Gap}
+The practical question is whether explicitly implemented DE improves upon an equally budgeted random search for this particular SVR task. The study addresses experimental comparability and reproducibility rather than claiming an unexplored application area. Its limited dataset and fixed partition permit a controlled course project but restrict general conclusions about algorithm rankings.

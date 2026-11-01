@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "presentation-finalization.v1",
+  "finalSha256": "cd8cf953af86064665813935f0f193486a3d567b0e5682b9e3bcf61a9fd86142",
+  "byteCount": 762325,
+  "packageIntegrity": {
+    "chart_count": 0,
+    "claim_boundary": "Structural package checks only; no slide text, notes, formulas, chart values, or native PowerPoint execution were inspected.",
+    "finding_count": 0,
+    "findings": [],
+    "notes_parts_skipped": 18,
+    "relationship_part_count": 48,
+    "slide_count": 18,
+    "status": "pass",
+    "exitCode": 0,
+    "findingCount": 0,
+    "warnings": []
+  },
+  "presentationLayout": {
+    "finding_count": 0,
+    "findings": [],
+    "font_policy": {
+      "checked_text_script_count": 219,
+      "native_font_rendering_verified": false,
+      "observed_font_families": [
+        "Arial",
+        "Calibri",
+        "Times New Roman"
+      ],
+      "observed_font_use_counts": {
+        "Arial": 34,
+        "Calibri": 2,
+        "Times New Roman": 183
+      },
+      "passed": true,
+      "performed": true
+    },
+    "slide_count": 18,
+    "slide_size_in": [
+      21.9861,
+      12.3681
+    ],
+    "warning_count": 0,
+    "warnings": [],
+    "exitCode": 0,
+    "findingCount": 0,
+    "fontPolicy": {
+      "checked_text_script_count": 219,
+      "native_font_rendering_verified": false,
+      "observed_font_families": [
+        "Arial",
+        "Calibri",
+        "Times New Roman"
+      ],
+      "observed_font_use_counts": {
+        "Arial": 34,
+        "Calibri": 2,
+        "Times New Roman": 183
+      },
+      "passed": true,
+      "performed": true
+    }
+  },
+  "fontSelection": {
+    "basis": "reference",
+    "approvedFamilies": [
+      "Times New Roman",
+      "Arial",
+      "Calibri"
+    ],
+    "scriptFonts": {},
+    "referenceSha256": "357d75bdaf48ab59ea4fab536efd13efa75d47ac06295837df23d92cb980506b",
+    "referenceFontsVerifiedInEncodedText": true,
+    "checked_text_script_count": 219,
+    "native_font_rendering_verified": false,
+    "observed_font_families": [
+      "Arial",
+      "Calibri",
+      "Times New Roman"
+    ],
+    "observed_font_use_counts": {
+      "Arial": 34,
+      "Calibri": 2,
+      "Times New Roman": 183
+    },
+    "passed": true,
+    "performed": true
+  },
+  "firstPartyImport": {
+    "performed": false,
+    "passed": null,
+    "reason": "explicitly_not_requested"
+  },
+  "nativeTableArithmetic": {
+    "performed": true,
+    "checked_column_count": 0,
+    "checks": [],
+    "claim_boundary": "Displayed-value arithmetic with rounding tolerance; not source-data verification.",
+    "eligible_table_count": 0,
+    "finding_count": 0,
+    "findings": [],
+    "native_table_count": 1,
+    "passed": true,
+    "schema_version": "presentation-native-table-arithmetic.v1",
+    "skipped_tables": [
+      {
+        "reason": "no_unambiguous_bottom_total",
+        "slide": 10,
+        "table": 1
+      }
+    ],
+    "slide_count": 18,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "nativeChartTitles": {
+    "performed": true,
+    "checks": [],
+    "finding_count": 0,
+    "findings": [],
+    "native_chart_count": 0,
+    "native_powerpoint_verified": false,
+    "passed": true,
+    "presentation_sha256": "cd8cf953af86064665813935f0f193486a3d567b0e5682b9e3bcf61a9fd86142",
+    "schema_version": "presentation-native-chart-titles.v1",
+    "slide_count": 18,
+    "source_text_emitted": false,
+    "unresolved_linked_title_count": 0
+  },
+  "sourceDerivedPolicyFlags": [
+    "--expected-slide-size-emu",
+    "20104100,11309350",
+    "--expected-slide-count",
+    "18",
+    "--require-native-table-slide",
+    "10",
+    "--validate-bullet-geometry",
+    "--validate-heading-fit",
+    "--cover-role",
+    "none",
+    "--approved-font-family",
+    "Times New Roman",
+    "--approved-font-family",
+    "Arial",
+    "--approved-font-family",
+    "Calibri"
+  ],
+  "nativeChartValidation": {
+    "detectedOwnerSlides": [],
+    "detectedChartCount": 0,
+    "targetApplication": null,
+    "sourceChartOwnersExplicitlyDeclared": false,
+    "validatorRan": false,
+    "passed": true
+  }
+}
