@@ -14,8 +14,8 @@ Simulated annealing probabilistically accepts some worsening moves according to 
 \section{Differential Evolution}
 For target vector $\mathbf{x}_i$, choose distinct indices $r_1,r_2,r_3$ that exclude $i$. Differential mutation computes
 \begin{equation}\mathbf{v}_i=\mathbf{x}_{r_1}+F(\mathbf{x}_{r_2}-\mathbf{x}_{r_3}).\end{equation}
-Coordinates are clipped to their bounds. Binomial crossover creates a trial with
-\begin{equation}u_{ij}=\begin{cases}v_{ij},&r_j<CR\ \text{or}\ j=j_{\mathrm{rand}},\\x_{ij},&\text{otherwise}.\end{cases}\end{equation}
+Coordinates are clipped to their bounds. Binomial crossover draws $\rho_j\sim\mathcal{U}[0,1)$ for each coordinate $j$ and creates a trial with
+\begin{equation}u_{ij}=\begin{cases}v_{ij},&\rho_j<CR\ \text{or}\ j=j_{\mathrm{rand}},\\x_{ij},&\text{otherwise}.\end{cases}\end{equation}
 The forced index ensures at least one coordinate comes from the mutant. Greedy selection accepts $\mathbf{u}_i$ when its fitness is no worse than that of $\mathbf{x}_i$. The implementation uses a frozen source population within a generation and commits replacements after that generation, matching deferred updating \cite{storn}.
 \section{Why Differential Evolution for SVR Optimization?}
 The search has three real-valued coordinates and a fitness obtained from model fitting. DE supports this continuous representation without requiring derivatives. Its operators can be implemented and tested directly within the course scope. The choice is justified by fit to the task and implementation transparency, not by an assumed accuracy advantage over random search.

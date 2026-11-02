@@ -20,7 +20,7 @@
   "ppt_table_matches_frozen_json": true,
   "ppt_matches_finalization_receipt": true,
   "ppt_finalizer_no_findings_or_warnings": true,
-  "report_sha256": "a8c45944b3e439e1f49fcb372ee71dee7a833f00eace145717fce35cc5305bc6",
+  "report_sha256": "c56362830174cf7eac5d2cd41646b29a24665f11ecbe85fcc9ffe87f20683643",
   "pptx_sha256": "cd8cf953af86064665813935f0f193486a3d567b0e5682b9e3bcf61a9fd86142",
   "validation_scope": "Automated artifact checks; visual review is recorded separately in docs/deliverable-validation.md.",
   "artifact_import_limitation": "Bundled Artifact Tool import lacked @oai/granola/node; used targeted python-pptx edits and first-party package/layout/font finalization. Import check skipped explicitly.",

@@ -1,6 +1,13 @@
 \chapter{Comparative Performance Analysis}
 \section{Accuracy and Search Budget}
-Random Search and DE share the same logarithmic bounds, five CV folds, five seed values and 300-call budget. Both tune the same estimator pipeline. The comparison controls opportunity to evaluate candidates, making their accuracy differences more interpretable than comparisons based on unequal search effort.
+Random Search and DE share the same logarithmic bounds, five CV folds, five seed values and 300-call budget. Both tune the same estimator pipeline. The comparison controls opportunity to evaluate candidates, making their accuracy differences more interpretable than comparisons based on unequal search effort. Table~\ref{tab:comparison} summarizes the three configurations.
+
+\begin{table}[htbp]\centering\caption[Default SVR, Random Search and DE on the same split]{Default SVR, Random Search and DE on the same split. Tuned values are five-seed mean $\pm$ sample SD; the default validation value is its single five-fold mean.}\label{tab:comparison}\begin{tabularx}{\textwidth}{lCCC}\toprule Measure&Default SVR&Random Search&DE\\\midrule
+Evaluations per seed&none (fixed)&300&300\\
+Validation CV RMSE (MPa)&10.3140&$5.9399\pm0.0287$&$5.8797\pm0.0198$\\
+Holdout RMSE (MPa)&9.9069&$6.2328\pm0.1194$&$6.2250\pm0.1104$\\
+Holdout MAE (MPa)&7.8854&$4.3502\pm0.0253$&$4.3143\pm0.0526$\\
+Holdout $R^2$&0.5755&$0.8319\pm0.0064$&$0.8324\pm0.0060$\\\bottomrule\end{tabularx}\end{table}
 
 DE's mean validation RMSE is $5.8797\pm0.0198$ MPa versus $5.9399\pm0.0287$ MPa for Random Search. Holdout means, however, are 6.2250 and 6.2328 MPa respectively. The relative ordering on validation is not sufficient evidence of practically meaningful superiority on holdout.
 \section{Advantages and Limitations}

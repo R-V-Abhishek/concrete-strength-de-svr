@@ -4,9 +4,9 @@ The pipeline consists of raw-data validation, deterministic group assignment, sp
 
 The main modules are \texttt{data.py} for ingestion and grouping, \texttt{evaluation.py} for fitting and scoring, \texttt{search.py} for Random Search, \texttt{de.py} for DE operators, and \texttt{stage3.py} for finalization and diagnostics. Verification logic audits saved records separately from optimization.
 \section{Data Collection}
-The dataset is the original UCI Concrete Compressive Strength spreadsheet and its readme \cite{uci}. Raw files and the downloaded archive are retained unchanged. The data are not scraped from a live service and are not augmented with another dataset. Source attribution includes both the UCI dataset DOI and Yeh's original publication.
+The dataset is the original UCI Concrete Compressive Strength spreadsheet and its readme \cite{uci}. Raw files and the downloaded archive are retained unchanged. The data are not scraped from a live service and are not augmented with another dataset. Source attribution includes both the UCI dataset DOI and Yeh's original publication. Table~\ref{tab:variables} lists the variables and units.
 
-\begin{table}[htbp]\centering\caption{Dataset variables and units.}\begin{tabularx}{\textwidth}{lX}\toprule Variable&Unit and role\\\midrule Cement; blast furnace slag; fly ash&kg/m$^3$, predictors\\Water; superplasticizer&kg/m$^3$, predictors\\Coarse aggregate; fine aggregate&kg/m$^3$, predictors\\Age&Days, predictor\\Compressive strength&MPa, target\\\bottomrule\end{tabularx}\end{table}
+\begin{table}[htbp]\centering\caption{Dataset variables and units.}\label{tab:variables}\begin{tabularx}{\textwidth}{lX}\toprule Variable&Unit and role\\\midrule Cement; blast furnace slag; fly ash&kg/m$^3$, predictors\\Water; superplasticizer&kg/m$^3$, predictors\\Coarse aggregate; fine aggregate&kg/m$^3$, predictors\\Age&Days, predictor\\Compressive strength&MPa, target\\\bottomrule\end{tabularx}\end{table}
 \section{Data Preprocessing}
 The spreadsheet headers are mapped explicitly to canonical columns. The expected schema contains eight predictors and one target. Missing values are checked before splitting; no imputation is needed. All 1,030 rows are retained. There are 996 unique complete input tuples, so 34 rows repeat an existing eight-feature combination.
 

@@ -5,10 +5,10 @@ Figure~\ref{fig:convergence} shows the saved best-so-far development RMSE histor
 \section{Optimal Hyperparameter Configuration}
 The best observed validation-selected demonstration is DE seed 11, with CV RMSE 5.8601 MPa. The decoded values are $C=1462.1749$, $\gamma=0.0573784$ and $\epsilon=1.3447436$. ``Optimal'' refers to the best observed candidate in this finite search; no proof of a global optimum is implied. Its holdout RMSE is 6.3712 MPa, MAE 4.2896 MPa and $R^2=0.8244$.
 \section{Prediction Performance}
-Table~\ref{tab:metrics} gives the approved holdout comparison. Tuned values are mean $\pm$ sample SD over five optimizer seeds. Default SVR is one fixed configuration. Every model is evaluated on the same 204 holdout observations.
+Table~\ref{tab:metrics} gives the holdout comparison. Tuned values are mean $\pm$ sample SD over five optimizer seeds. Default SVR is one fixed configuration. Every model is evaluated on the same 204 holdout observations.
 \input{tables/aggregate}
 DE improves mean RMSE relative to default by approximately 37.2\%. Its 0.0078 MPa advantage over Random Search is approximately 0.125\% of Random Search RMSE. Both tuned methods therefore provide essentially equivalent holdout performance within this experiment.
-\begin{figure}[htbp]\centering\includegraphics[width=\textwidth]{assets/holdout_rmse_comparison.png}\caption{Holdout RMSE: default SVR and five-seed tuned-model aggregates. Error bars describe optimizer-seed SD.}\label{fig:comparison}\end{figure}
+\begin{figure}[htbp]\centering\includegraphics[width=0.7\textwidth]{assets/holdout_rmse_comparison.png}\caption{Holdout RMSE: default SVR and five-seed tuned-model aggregates. Error bars describe optimizer-seed SD.}\label{fig:comparison}\end{figure}
 \section{Temporal Performance Analysis}
 Temporal regime analysis is not applicable to this cross-sectional tabular dataset. Curing age is a predictor rather than a time-ordering rule for samples. No chronological regime or rolling-window result was produced. Age-stratified error analysis could be evaluated in future work under a declared protocol.
 \section{Comparison with Baseline Models}
@@ -24,10 +24,12 @@ Residual patterns are descriptive. A plot alone does not establish homoscedastic
 \section{Computational Performance}
 The complete search budget is 1,500 candidate evaluations per method, each scored on five development folds. Every attempted candidate is counted. The demonstration's saved final development refit takes 0.4194 seconds in the original experiment environment; this excludes search time and is not an end-to-end runtime claim. The repository retains per-call timing histories for further inspection.
 \section{Robustness Analysis}
+Table~\ref{tab:perseed} lists the holdout metrics of every predefined validation-selected run.
+
 \input{tables/per-seed}
 Across seeds, DE holdout RMSE SD is 0.1104 MPa and Random Search SD is 0.1194 MPa. These values quantify optimization variability on this one holdout. They do not measure robustness to a different dataset, partition, measurement process or concrete source.
 
-The corrected learning curve uses three development-only folds. Within each fold, training subsets are nested samples of complete groups at fractions 0.25, 0.50, 0.75 and 1.00. Parameters remain fixed; there is no retuning or holdout access. Mean validation RMSE declines from 8.3838 to 5.9784 MPa while mean training RMSE rises from 2.7596 to 3.7728 MPa. The remaining gap suggests that the fitted model has lower error on its training subsets than on validation groups.
+The corrected learning curve (Figure~\ref{fig:learning}) uses three development-only folds. Within each fold, training subsets are nested samples of complete groups at fractions 0.25, 0.50, 0.75 and 1.00. Parameters remain fixed; there is no retuning or holdout access. Mean validation RMSE declines from 8.3838 to 5.9784 MPa while mean training RMSE rises from 2.7596 to 3.7728 MPa. The remaining gap suggests that the fitted model has lower error on its training subsets than on validation groups.
 \begin{figure}[H]\centering\includegraphics[width=0.78\textwidth]{assets/learning_curve.png}\caption{Three-fold development diagnostic with nested whole-group samples and fixed demonstration parameters.}\label{fig:learning}\end{figure}
 These diagnostic values do not replace the five-fold search objective or provide an additional independent generalization estimate.
 \section{Discussion}
