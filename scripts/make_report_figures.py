@@ -90,7 +90,7 @@ def extension_figures() -> None:
         xs = np.arange(3) + (k - 0.5) * width
         ax.bar(xs, [v[0] for v in vals.values()], width, yerr=[v[1] for v in vals.values()], capsize=4, label=label, color=color)
         for x, v in zip(xs, vals.values()):
-            ax.text(x, v[0] + v[1] + 0.15, f"{v[0]:.2f}", ha="center", fontsize=9)
+            ax.text(x, v[0] + v[1] + 0.15, f"{v[0]:.3f}", ha="center", fontsize=9)
     ax.set(xticks=range(3), xticklabels=list(raw), ylabel="Holdout RMSE (MPa)",
            title="Same input representation for all three methods")
     ax.legend()
@@ -145,5 +145,39 @@ def extension_figures() -> None:
     plt.close(fig)
 
 
+def extension_table() -> None:
+    """Write report/tables/extension.tex from the saved extension and frozen results."""
+    final = json.loads(Path("results/final/final_results.json").read_text())["comparison"]
+    ext = json.loads(Path("results/extension/extension_results.json").read_text())
+    agg = {(a["feature_set"], a["method"]): a for a in ext["aggregates"]}
+
+    def pm(a: dict) -> str:
+        return f"\\mbox{{${a['mean']:.4f}\\pm{a['std']:.4f}$}}"
+
+    def row(label: str, a: dict) -> str:
+        return (f"{label} & {pm(a['validation_rmse'])} & {pm(a['holdout_rmse'])} & "
+                f"{pm(a['holdout_mae'])} & {pm(a['holdout_r2'])}\\\\")
+
+    def frozen(key: str) -> dict:
+        c = final[key]
+        return {"validation_rmse": c["validation"], **{f"holdout_{m}": c["holdout"][m] for m in ("rmse", "mae", "r2")}}
+
+    d_raw, d_log = final["default_svr"], ext["default_svr"]["log_age"]
+    lines = [
+        r"\begin{table}[htbp]\centering\caption[Extension results]{Raw features (frozen) versus ln(age) features. Tuned values are five-seed mean $\pm$ sample SD on the same 204 holdout rows; default rows show the single five-fold CV mean and the single holdout score.}\label{tab:extension}\footnotesize\setlength{\tabcolsep}{4pt}\begin{tabularx}{\textwidth}{lCCCC}\toprule Model&Validation RMSE&Holdout RMSE&Holdout MAE&Holdout $R^2$\\\midrule",
+        r"\multicolumn{5}{l}{\textit{Raw features (frozen results)}}\\",
+        f"Default SVR & {d_raw['cv']['mean_rmse']:.4f} & {d_raw['holdout']['rmse']:.4f} & {d_raw['holdout']['mae']:.4f} & {d_raw['holdout']['r2']:.4f}\\\\",
+        row("Random Search", frozen("random_search")), row("DE rand/1/bin", frozen("de")),
+        r"\midrule\multicolumn{5}{l}{\textit{ln(age) features (extension)}}\\",
+        f"Default SVR & {d_log['cv_metrics']['mean_rmse']:.4f} & {d_log['holdout_metrics']['rmse']:.4f} & {d_log['holdout_metrics']['mae']:.4f} & {d_log['holdout_metrics']['r2']:.4f}\\\\",
+        row("Random Search", agg["log_age", "RandomSearch"]), row("DE rand/1/bin", agg["log_age", "rand/1/bin"]),
+        r"\midrule\multicolumn{5}{l}{\textit{DE ablations on ln(age) (same 300-call budget)}}\\",
+        row("DE current-to-best/1/bin", agg["log_age", "current-to-best/1/bin"]), row("jDE", agg["log_age", "jDE"]),
+        row("DE rand/1/bin + water ratios", agg["log_age_ratios", "rand/1/bin"]),
+        r"\bottomrule\end{tabularx}\end{table}",
+    ]
+    Path("report/tables/extension.tex").write_text("\n".join(lines) + "\n")
+
+
 if __name__ == "__main__":
-    {"evidence": evidence_figures, "extension": extension_figures}[sys.argv[1]]()
+    {"evidence": evidence_figures, "extension": extension_figures, "tables": extension_table}[sys.argv[1]]()

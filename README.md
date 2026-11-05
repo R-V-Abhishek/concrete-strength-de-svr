@@ -15,7 +15,7 @@ Bio-Inspired Algorithms semester AAT project for a four-member team.
 
 Evaluate whether Differential Evolution (DE) improves the hyperparameters of an RBF Support Vector Regression (SVR) model for predicting concrete compressive strength. Compare default SVR, random-search tuning, and DE tuning using the same data splits and comparable search budgets.
 
-Status: Stages 1–3 and the technical closeout are complete. The [35-page report](report/concrete-strength-de-svr-report.pdf) and [18-slide editable presentation](presentation/concrete-strength-de-svr-presentation.pptx) have been prepared and locally validated from the frozen evidence. See [deliverable validation](docs/deliverable-validation.md) for checks and remaining signatures, access and submission tasks. Original model selections, holdout results and technical evidence are preserved.
+Status: Stages 1–3 and the technical closeout are complete. The [43-page report](report/concrete-strength-de-svr-report.pdf) and [18-slide editable presentation](presentation/concrete-strength-de-svr-presentation.pptx) have been prepared and locally validated from the frozen evidence. See [deliverable validation](docs/deliverable-validation.md) for checks and remaining signatures, access and submission tasks. Original model selections, holdout results and technical evidence are preserved.
 
 ## Repository layout
 
@@ -78,3 +78,5 @@ The pilot and synthetic checks are saved under `results/pilot/`. `de-search` sel
 Read the [protocol and final handoff](docs/protocol.md), [work log](docs/work-log.md), and [results guide](results/README.md) before preparing deliverables. The existing baseline/random-search artifacts already include holdout evaluations; preserve this chronology when reporting results.
 
 See the [detailed four-member implementation plan and task network](docs/implementation-plan.md), [project scope](docs/project-brief.md), and [submission checklist](docs/submission-checklist.md).
+
+**Extension (5 Nov 2026).** A pre-registered follow-up ([protocol](docs/protocol-extension.md)) tests `ln(age)` input for default SVR, Random Search and DE, plus DE-variant and water-ratio ablations: `uv run concrete-strength extension-search` then `extension-finalize` write `results/extension/`. The frozen results above are unchanged. Charts and the LaTeX table regenerate with `uv run python scripts/make_report_figures.py evidence|extension|tables`; TikZ diagrams are in `report/figures/` (`sh report/scripts/render_figures.sh` makes PNGs for the slides).

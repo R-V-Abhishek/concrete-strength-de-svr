@@ -57,3 +57,21 @@ def test_new_strategies_improve_on_initial_population(strategy):
 def test_unknown_strategy_rejected():
     with pytest.raises(ValueError):
         minimize_de(sphere, BOUNDS, 1, budget=30, strategy="best/2")
+
+
+def test_extension_evidence_consistent():
+    """Saved extension selections are budgeted, in bounds, and holdout metrics match predictions."""
+    df, manifest = load_processed_data("data/processed/concrete_cleaned.csv",
+                                       "data/processed/splits_manifest.json")
+    search = json.load(open("results/extension/extension_search.json"))
+    results = json.load(open("results/extension/extension_results.json"))
+    assert results["holdout_used_for_selection"] is False and len(search["runs"]) == len(results["runs"]) == 25
+    actual = df["compressive_strength"].to_numpy()[manifest["holdout_indices"]]
+    for run in search["runs"]:
+        assert run["total_evaluations"] == 300
+        assert run["best_cv_rmse"] == min(h["mean_cv_rmse"] for h in run["history"])
+        assert all(-2 <= h["log_params"][0] <= 4 and -5 <= h["log_params"][1] <= 1
+                   and -3 <= h["log_params"][2] <= 1 for h in run["history"])
+    for run in results["runs"]:
+        rmse = np.sqrt(np.mean((np.asarray(run["holdout_predictions"]) - actual) ** 2))
+        assert rmse == pytest.approx(run["holdout"]["rmse"], abs=2e-4)
