@@ -3,6 +3,7 @@
 The pipeline consists of raw-data validation, deterministic group assignment, split-manifest creation, development-only search, fixed-candidate refitting and holdout evaluation. Results are written as structured evidence rather than transcribed from console output. The same evaluator is used by both tuned methods, so preprocessing and fitness definitions remain consistent.
 
 The main modules are \texttt{data.py} for ingestion and grouping, \texttt{evaluation.py} for fitting and scoring, \texttt{search.py} for Random Search, \texttt{de.py} for DE operators, and \texttt{stage3.py} for finalization and diagnostics. Verification logic audits saved records separately from optimization.
+\begin{figure}[htbp]\centering\resizebox{\textwidth}{!}{\input{figures/architecture.tex}}\caption{End-to-end architecture: data, preprocessing and splits, matched-budget optimisation on development data, and a single holdout evaluation with an audited evidence package.}\label{fig:architecture}\end{figure}
 \section{Data Collection}
 The dataset is the original UCI Concrete Compressive Strength spreadsheet and its readme \cite{uci}. Raw files and the downloaded archive are retained unchanged. The data are not scraped from a live service and are not augmented with another dataset. Source attribution includes both the UCI dataset DOI and Yeh's original publication. Table~\ref{tab:variables} lists the variables and units.
 
@@ -11,6 +12,9 @@ The dataset is the original UCI Concrete Compressive Strength spreadsheet and it
 The spreadsheet headers are mapped explicitly to canonical columns. The expected schema contains eight predictors and one target. Missing values are checked before splitting; no imputation is needed. All 1,030 rows are retained. There are 996 unique complete input tuples, so 34 rows repeat an existing eight-feature combination.
 
 Rows with the same complete input tuple share a group. GroupShuffleSplit with seed 42 reserves 200 groups containing 204 rows for holdout; 796 groups containing 826 rows remain for development. Five GroupKFold splits are fixed inside development data. This isolates identical input tuples across fitting and evaluation boundaries while retaining their observed target values.
+Figure~\ref{fig:eda} shows the development rows. Strength varies widely at every age and the gains flatten at later ages, which is why a logarithmic age axis is used in the extension study (the extension chapter). Figure~\ref{fig:correlation} gives pairwise Pearson correlations on development rows only: cement (0.53), superplasticizer (0.39) and age (0.32) correlate positively with strength and water negatively ($-0.33$). The correlation between $\ln(\text{age})$ and strength is 0.55. These are descriptive linear associations, not feature-importance estimates.
+\begin{figure}[htbp]\centering\includegraphics[width=\textwidth]{assets/eda_age_strength.png}\caption{Strength versus age (log axis) and target distribution for the 826 development rows.}\label{fig:eda}\end{figure}
+\begin{figure}[htbp]\centering\includegraphics[width=0.7\textwidth]{assets/correlation_heatmap.png}\caption{Pearson correlation matrix of the eight inputs and strength, development rows only.}\label{fig:correlation}\end{figure}
 \section{Feature Engineering}
 The model uses the eight original numerical inputs. It does not introduce technical indicators, polynomial interactions, feature selection or target transformations. Standardization is the only learned feature transformation. Keeping the feature representation fixed helps isolate the effect of hyperparameter optimization.
 \section{SVR Model Architecture}
@@ -34,6 +38,8 @@ Population size is 15, mutation weight $F=0.8$, crossover rate $CR=0.9$ and the 
 \EndFor
 \State \Return Candidate with lowest observed development RMSE
 \end{algorithmic}\end{algorithm}
+Figure~\ref{fig:deflow} shows the same procedure as a flowchart, including the two loops (over targets within a generation and over generations until the 300-call budget is spent).
+\begin{figure}[htbp]\centering\resizebox{!}{0.6\textheight}{\input{figures/de-flowchart.tex}}\caption{Flowchart of the budget-controlled DE/rand/1/bin implementation.}\label{fig:deflow}\end{figure}
 \section{Training Procedure}
 For each seed, the optimizer receives the same saved five-fold development splits. The selected candidate minimizes mean fold RMSE. Each selected configuration is then refitted on all 826 development rows and evaluated on the same 204 holdout rows. Five seeds, 11, 22, 33, 44 and 55, are retained for each method.
 

@@ -19,7 +19,7 @@
 \node[prep, right=of p1] (p2) {5 group-disjoint CV folds\\development data only\\saved split manifest};
 \node[prep, right=of p2] (p3) {Feature representation\\raw or $\ln(\text{age})$\\(+ water ratios, ablation)};
 % Row 3: optimisation
-\node[opt, below=1.3cm of p1] (o1) {Tune $\log_{10}(C,\gamma,\varepsilon)$\\Default / Random / DE variants\\300 calls $\times$ 5 seeds each};
+\node[opt, below=1.3cm of p1] (o1) {Tune $\log_{10}(C,\gamma,\varepsilon)$\\Default, Random, DE variants\\300 calls $\times$ 5 seeds each};
 \node[opt, right=of o1] (o2) {Fitness evaluator\\fold-local scaler + RBF-SVR\\mean 5-fold CV RMSE (MPa)};
 \node[opt, right=of o2] (o3) {Freeze best-CV candidate\\one per method and seed\\holdout never consulted};
 % Row 4: final evaluation
