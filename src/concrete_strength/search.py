@@ -49,6 +49,7 @@ def run_random_search_single_seed(
     seed: int,
     budget: int = 300,
     bounds: dict[str, tuple[float, float]] | None = None,
+    feature_columns: list[str] = FEATURE_COLUMNS,
 ) -> dict[str, Any]:
     """Execute random search for a single seed with exact call budget accounting."""
     b = bounds or DEFAULT_BOUNDS
@@ -70,6 +71,7 @@ def run_random_search_single_seed(
             log_epsilon=log_eps,
             df=df,
             cv_folds=cv_folds,
+            feature_columns=feature_columns,
         )
         call_time = time.perf_counter() - t0
 
@@ -122,9 +124,10 @@ def evaluate_selected_on_holdout(
     dev_indices: list[int],
     holdout_indices: list[int],
     decoded_params: dict[str, float],
+    feature_columns: list[str] = FEATURE_COLUMNS,
 ) -> dict[str, Any]:
     """Refit the validation-selected candidate on the full development set and evaluate on holdout."""
-    X = df[FEATURE_COLUMNS].to_numpy(dtype=np.float64)
+    X = df[feature_columns].to_numpy(dtype=np.float64)
     y = df[TARGET_COLUMN].to_numpy(dtype=np.float64)
 
     pipeline = build_svr_pipeline(

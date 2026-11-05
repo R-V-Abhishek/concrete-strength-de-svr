@@ -1,0 +1,14 @@
+{
+  "protocol": "docs/protocol-extension.md",
+  "budget": 300,
+  "seeds": [11, 22, 33, 44, 55],
+  "de": {"population_size": 15, "mutation_weight": 0.8, "crossover_rate": 0.9},
+  "runs": [
+    {"feature_set": "log_age", "method": "RandomSearch"},
+    {"feature_set": "log_age", "method": "rand/1/bin"},
+    {"feature_set": "log_age_ratios", "method": "rand/1/bin"},
+    {"feature_set": "log_age", "method": "current-to-best/1/bin"},
+    {"feature_set": "log_age", "method": "jDE"}
+  ],
+  "default_feature_sets": ["log_age", "log_age_ratios"]
+}

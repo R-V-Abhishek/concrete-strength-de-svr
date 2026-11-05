@@ -68,9 +68,10 @@ def evaluate_svr_cv(
     C: float,
     gamma: float | str,
     epsilon: float,
+    feature_columns: list[str] = FEATURE_COLUMNS,
 ) -> dict[str, Any]:
     """Evaluate SVR across predefined cross-validation folds."""
-    X = df[FEATURE_COLUMNS].to_numpy(dtype=np.float64)
+    X = df[feature_columns].to_numpy(dtype=np.float64)
     y = df[TARGET_COLUMN].to_numpy(dtype=np.float64)
 
     fold_metrics = []
@@ -108,6 +109,7 @@ def evaluate_hyperparameters(
     log_epsilon: float,
     df: pd.DataFrame,
     cv_folds: list[dict[str, Any]],
+    feature_columns: list[str] = FEATURE_COLUMNS,
 ) -> tuple[float, list[float]]:
     """Decode log-parameters and compute 5-fold CV RMSE.
     
@@ -117,7 +119,8 @@ def evaluate_hyperparameters(
     gamma = float(10.0 ** log_gamma)
     epsilon = float(10.0 ** log_epsilon)
 
-    res = evaluate_svr_cv(df=df, cv_folds=cv_folds, C=C, gamma=gamma, epsilon=epsilon)
+    res = evaluate_svr_cv(df=df, cv_folds=cv_folds, C=C, gamma=gamma, epsilon=epsilon,
+                          feature_columns=feature_columns)
     return res["mean_cv_rmse"], res["fold_rmses"]
 
 
@@ -169,13 +172,15 @@ def evaluate_default_svr(
     C: float = 1.0,
     gamma: float | str = "scale",
     epsilon: float = 0.1,
+    feature_columns: list[str] = FEATURE_COLUMNS,
 ) -> dict[str, Any]:
     """Evaluate the Default SVR model on 5-fold CV and holdout test set."""
-    X = df[FEATURE_COLUMNS].to_numpy(dtype=np.float64)
+    X = df[feature_columns].to_numpy(dtype=np.float64)
     y = df[TARGET_COLUMN].to_numpy(dtype=np.float64)
 
     # 1. 5-Fold CV
-    cv_res = evaluate_svr_cv(df=df, cv_folds=cv_folds, C=C, gamma=gamma, epsilon=epsilon)
+    cv_res = evaluate_svr_cv(df=df, cv_folds=cv_folds, C=C, gamma=gamma, epsilon=epsilon,
+                           feature_columns=feature_columns)
 
     # 2. Refit on full development set and evaluate on holdout
     pipeline = build_svr_pipeline(C=C, gamma=gamma, epsilon=epsilon)

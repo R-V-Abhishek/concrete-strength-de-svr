@@ -45,6 +45,26 @@ FEATURE_COLUMNS: list[str] = [
 
 TARGET_COLUMN: str = "compressive_strength"
 
+FEATURE_SETS: dict[str, list[str]] = {
+    "raw": FEATURE_COLUMNS,
+    "log_age": [*FEATURE_COLUMNS[:-1], "log_age"],
+    "log_age_ratios": [*FEATURE_COLUMNS[:-1], "log_age", "water_cement", "water_binder"],
+}
+
+
+def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy with row-wise log_age, water_cement and water_binder columns.
+
+    Purely deterministic per-row transforms: nothing is fitted, so nothing can leak
+    between development folds and the holdout. Original columns are untouched.
+    """
+    out = df.copy()
+    out["log_age"] = np.log(out["age"])
+    binder = out["cement"] + out["blast_furnace_slag"] + out["fly_ash"]
+    out["water_cement"] = out["water"] / out["cement"]
+    out["water_binder"] = out["water"] / binder
+    return out
+
 
 def compute_sha256(filepath: str | Path) -> str:
     """Compute the SHA-256 checksum of a file."""
