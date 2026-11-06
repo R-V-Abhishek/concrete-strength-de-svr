@@ -14,7 +14,7 @@ import pandas as pd
 from sklearn.dummy import DummyRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import FunctionTransformer, StandardScaler
 from sklearn.svm import SVR
 
 from concrete_strength.data import FEATURE_COLUMNS, TARGET_COLUMN
@@ -60,6 +60,42 @@ def build_svr_pipeline(
             ),
         ]
     )
+
+
+def _scale_columns(X: np.ndarray, scale: np.ndarray) -> np.ndarray:
+    return X * scale
+
+
+def build_ard_pipeline(C: float, gammas: Sequence[float], epsilon: float) -> Pipeline:
+    """RBF-SVR with one gamma per feature (ARD): k(x, x') = exp(-sum_j gamma_j (x_j - x'_j)^2).
+
+    Standardized columns are multiplied by sqrt(gamma_j) and the SVR uses gamma = 1, so equal
+    gammas reproduce the ordinary RBF-SVR. Scaling is still fitted on training data only.
+    """
+    return Pipeline(steps=[
+        ("scaler", StandardScaler()),
+        ("ard", FunctionTransformer(_scale_columns, kw_args={"scale": np.sqrt(np.asarray(gammas, dtype=float))})),
+        ("svr", SVR(kernel="rbf", C=float(C), gamma=1.0, epsilon=float(epsilon))),
+    ])
+
+
+def evaluate_ard_cv(
+    df: pd.DataFrame,
+    cv_folds: list[dict[str, Any]],
+    C: float,
+    gammas: Sequence[float],
+    epsilon: float,
+    feature_columns: list[str],
+) -> tuple[float, list[float]]:
+    """Mean and per-fold CV RMSE of the ARD kernel on the predefined folds."""
+    X = df[feature_columns].to_numpy(dtype=np.float64)
+    y = df[TARGET_COLUMN].to_numpy(dtype=np.float64)
+    fold_rmses = []
+    for fold in cv_folds:
+        pipeline = build_ard_pipeline(C, gammas, epsilon)
+        pipeline.fit(X[fold["train_indices"]], y[fold["train_indices"]])
+        fold_rmses.append(compute_metrics(y[fold["val_indices"]], pipeline.predict(X[fold["val_indices"]]))["rmse"])
+    return round(float(np.mean(fold_rmses)), 4), fold_rmses
 
 
 def evaluate_svr_cv(
