@@ -1,0 +1,22 @@
+{
+  "protocol": "docs/protocol-extension2.md",
+  "workers": 7,
+  "seeds": [11, 22, 33, 44, 55],
+  "de": {"mutation_weight": 0.8, "crossover_rate": 0.9},
+  "feature_set": "log_age",
+  "ard": {
+    "budget": 1500,
+    "runs": [
+      {"space": "shared", "method": "RandomSearch"},
+      {"space": "shared", "method": "rand/1/bin", "population_size": 15},
+      {"space": "ard", "method": "RandomSearch"},
+      {"space": "ard", "method": "rand/1/bin", "population_size": 50}
+    ]
+  },
+  "replication": {
+    "split_seeds": [101, 102, 103, 104, 105],
+    "budget": 300,
+    "population_size": 15,
+    "methods": ["RandomSearch", "rand/1/bin"]
+  }
+}
