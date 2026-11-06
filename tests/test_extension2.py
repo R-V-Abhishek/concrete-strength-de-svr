@@ -44,3 +44,35 @@ def test_replication_splits_are_group_disjoint_and_differ_from_original(prepared
     assert set(split["holdout_indices"]) != set(manifest["holdout_indices"])
     for fold in split["cv_folds"]:
         assert not set(groups[fold["train_indices"]]) & set(groups[fold["val_indices"]])
+
+
+def test_extension2_ard_evidence_consistent(prepared):
+    """E2a: 20 runs of 1,500 calls, in bounds, best CV equals the history minimum, metrics match predictions."""
+    df, manifest = prepared
+    search = json.load(open("results/extension2/ard_search.json"))
+    results = json.load(open("results/extension2/ard_results.json"))
+    assert results["holdout_used_for_selection"] is False and len(search["runs"]) == len(results["runs"]) == 20
+    actual = df["compressive_strength"].to_numpy()[manifest["holdout_indices"]]
+    for run in search["runs"]:
+        assert run["total_evaluations"] == 1500
+        assert run["best_cv_rmse"] == min(h["mean_cv_rmse"] for h in run["history"])
+        for h in run["history"]:
+            p = h["log_params"]
+            assert len(p) == (10 if run["space"] == "ard" else 3)
+            if run["space"] == "ard":
+                assert -2 <= p[0] <= 4 and -3 <= p[1] <= 1 and all(-5 <= g <= 1 for g in p[2:])
+    for run in results["runs"]:
+        rmse = np.sqrt(np.mean((np.asarray(run["holdout_predictions"]) - actual) ** 2))
+        assert rmse == pytest.approx(run["holdout"]["rmse"], abs=2e-4)
+
+
+def test_extension2_replication_evidence_consistent():
+    """E2b: 50 runs of 300 calls on five splits, selections frozen before holdout, summary recomputable."""
+    search = json.load(open("results/extension2/replication_search.json"))
+    results = json.load(open("results/extension2/replication_results.json"))
+    assert results["holdout_used_for_selection"] is False and len(search["runs"]) == len(results["runs"]) == 50
+    assert all(r["total_evaluations"] == 300 and r["best_cv_rmse"] == min(h["mean_cv_rmse"] for h in r["history"])
+               for r in search["runs"])
+    d = [e["d_holdout"] for e in results["per_split"]]
+    assert results["summary"]["new_splits_holdout"]["mean"] == pytest.approx(np.mean(d), abs=1e-3)
+    assert len(d) == 5

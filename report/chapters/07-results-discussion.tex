@@ -55,4 +55,34 @@ Figure~\ref{fig:variants} compares DE/rand/1/bin with DE/current-to-best/1/bin a
 \subsection{Demonstration model and caveats}
 By the pre-registered rule, the validation-selected demonstration is DE/current-to-best/1/bin, seed 55 (validation RMSE 4.8606 MPa; holdout RMSE 4.8672 MPa, $R^2=0.8975$). Figure~\ref{fig:extpred} shows its holdout predictions and residuals, with all points retained. The demonstration is one model chosen by validation error and should not be read as an average; the five-seed rows of Table~\ref{tab:extension} are the aggregate evidence.
 \begin{figure}[htbp]\centering\includegraphics[width=\textwidth]{assets/extension_prediction.png}\caption{Holdout predictions and residuals for the validation-selected extension demonstration (current-to-best/1/bin, seed 55).}\label{fig:extpred}\end{figure}
-The extension uses one dataset, one fixed partition and five seeds. It shows that a physically motivated input transform helps all three methods substantially; it does not show that DE outperforms Random Search or that the result transfers to other data.
+The extension uses one dataset, one fixed partition and five seeds. It shows that a physically motivated input transform helps all three methods substantially; it does not show that DE outperforms Random Search or that the result transfers to other data. Section~\ref{sec:extension2} examines the DE--Random Search gap further.
+
+\section{Extension 2: Kernel Search Space and Split Replication}\label{sec:extension2}
+\subsection{Protocol}
+Two follow-up questions were pre-registered in \texttt{docs/protocol-extension2.md} before any run. All settings of the earlier extension are kept (ln(age) features, fold-local scaling, bounds, DE/rand/1/bin with $F=0.8$, $CR=0.9$, seeds 11--55, selection by CV RMSE only, one holdout evaluation after all selections were frozen). The disclosures above still apply, and the holdout had in addition been seen in Extension~1.
+
+\emph{E2a: higher-dimensional search space.} An unsaved development probe of an RBF kernel with one $\gamma$ per feature (ARD) had suggested a lower CV RMSE and contained no Random Search comparison. The ARD kernel multiplies each standardized column by $\sqrt{\gamma_j}$, giving $k(x,x')=\exp(-\sum_j\gamma_j(x_j-x'_j)^2)$, so the search space is 10-dimensional ($\log C$, $\log\epsilon$ and eight $\log\gamma_j$). Random Search and DE received the same 1{,}500-call budget (DE population 50). A shared-$\gamma$ control with the same 1{,}500 calls separates the effect of the kernel from the effect of the larger budget.
+
+\emph{E2b: replication of the DE--Random Search comparison.} The 300-call ln(age) comparison of Extension~1 was repeated on five further group-disjoint outer splits (same sizes, \texttt{random\_state} 101--105). Splits overlap one another and the original, so they are not independent.
+\subsection{ARD results}
+\begin{table}[htbp]\centering\footnotesize\caption{Extension 2a: 1{,}500 calls per run, five seeds, mean $\pm$ SD. Holdout was scored once after selection.}\label{tab:ext2ard}
+\begin{tabular}{llcc}\toprule
+Search space & Method & Validation RMSE (MPa) & Holdout RMSE (MPa)\\\midrule
+Shared $\gamma$ (3-D) & Random Search & $4.9185\pm0.0323$ & $4.8381\pm0.1064$\\
+Shared $\gamma$ (3-D) & DE/rand/1/bin & $4.8581\pm0.0000$ & $4.8699\pm0.0060$\\
+ARD (10-D) & Random Search & $5.1116\pm0.1766$ & $4.9693\pm0.3940$\\
+ARD (10-D) & DE/rand/1/bin & $4.8811\pm0.0633$ & $4.6787\pm0.4899$\\\bottomrule
+\end{tabular}\end{table}
+Table~\ref{tab:ext2ard} shows three things. First, Random Search deteriorates in the 10-D space (validation 5.1116 versus 4.9185 MPa in 3-D), while DE does not (4.8811 versus 4.8581 MPa), so DE's validation advantage grows from 0.06 MPa in 3-D to 0.23 MPa under ARD. Second, the ARD kernel did not improve validation RMSE over the shared-$\gamma$ kernel: its best DE mean (4.8811 MPa) is slightly worse than the shared-$\gamma$ DE mean (4.8581 MPa), and the lower CV value suggested by the development probe was not reproduced under this protocol. Third, ARD holdout RMSE varies widely across seeds (SD 0.39--0.49 MPa); the nominally lowest ARD DE mean (4.6787 MPa) is not supported by validation and is within that spread of the other rows. With a 1{,}500-call budget the 3-D Random Search holdout (4.8381 MPa) is actually marginally below the 3-D DE holdout (4.8699 MPa), and all five 3-D DE seeds converge to the same validation optimum. No claim is made that ARD improves accuracy.
+\subsection{Split replication}
+\begin{table}[htbp]\centering\footnotesize\caption{Extension 2b: Random Search minus DE/rand/1/bin, mean over five seeds (positive favours DE). Split 42 is the original partition.}\label{tab:ext2rep}
+\begin{tabular}{lccccc}\toprule
+Split & Default SVR & RS holdout & DE holdout & $d$ holdout & $d$ validation\\\midrule
+101 & 7.7818 & 4.9650 & 4.8165 & 0.1485 & 0.0766\\
+102 & 7.2445 & 5.1060 & 4.8981 & 0.2079 & 0.0981\\
+103 & 7.3624 & 4.7127 & 4.5541 & 0.1586 & 0.0404\\
+104 & 8.4922 & 4.9841 & 5.0647 & $-0.0806$ & 0.0995\\
+105 & 7.7067 & 4.6104 & 4.4654 & 0.1450 & 0.0599\\
+42 (original) & 7.4780 & 4.9700 & 4.8402 & 0.1298 & 0.0501\\\bottomrule
+\end{tabular}\end{table}
+DE has the lower mean validation RMSE on all six splits (mean difference 0.071 MPa, approximate 95\% $t$-interval 0.045--0.097) and the lower mean holdout RMSE on five of six (mean 0.118 MPa; interval 0.012--0.224; over the five new splits alone, mean 0.116 MPa with interval $-0.024$ to 0.256, which includes zero). These intervals treat splits as independent, which they are not, and are based on six values, so they are indicative only. The evidence is consistent with a small real advantage for DE on this problem of roughly 0.1 MPa (2--3\%) in holdout RMSE, small compared with the effect of the input representation (about 1.4 MPa), and it is not a demonstration of general superiority.
