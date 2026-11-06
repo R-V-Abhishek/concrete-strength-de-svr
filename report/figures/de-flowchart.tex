@@ -1,0 +1,28 @@
+% Budget-controlled DE flowchart (rand/1/bin as implemented in de.py).
+\begin{tikzpicture}[
+  font=\footnotesize, >={Stealth[length=2mm]}, node distance=0.55cm,
+  proc/.style={draw, rounded corners=2pt, fill=blue!8, draw=blue!60!black, align=center, text width=5.6cm, minimum height=0.9cm, inner sep=3pt},
+  io/.style={proc, fill=green!12, draw=green!50!black},
+  dec/.style={draw, diamond, aspect=2.6, fill=orange!15, draw=orange!70!black, align=center, inner sep=1pt, text width=3.0cm},
+  flow/.style={->, line width=0.6pt}]
+\node[io] (init) {Initialize $N=15$ candidates uniformly\\in the log$_{10}$ box (seeded RNG)};
+\node[proc, below=of init] (eval0) {Evaluate all 15: mean 5-fold CV RMSE\\(calls 1--15)};
+\node[proc, below=of eval0] (donor) {For target $i$: draw 3 distinct donors\\$r_1,r_2,r_3 \neq i$ from frozen generation};
+\node[proc, below=of donor] (mut) {Mutate: $v = x_{r_1} + F\,(x_{r_2}-x_{r_3})$,\\$F=0.8$; clip each coordinate to bounds};
+\node[proc, below=of mut] (cross) {Binomial crossover, $CR=0.9$\\(coordinate $j_{rand}$ always from $v$)};
+\node[proc, below=of cross] (trial) {Evaluate trial: 1 objective call};
+\node[dec, below=0.75cm of trial] (acc) {trial $\le$ target?};
+\node[proc, right=1.7cm of acc, text width=3.6cm] (keep) {Replace target in\\next generation};
+\node[dec, below=0.75cm of acc] (more) {all 15 targets\\done?};
+\node[dec, below=0.75cm of more] (bud) {300 calls\\used?};
+\node[io, below=0.75cm of bud] (out) {Return best-CV candidate\\$(C,\gamma,\varepsilon)=10^{x}$};
+\draw[flow] (init)--(eval0); \draw[flow] (eval0)--(donor); \draw[flow] (donor)--(mut);
+\draw[flow] (mut)--(cross); \draw[flow] (cross)--(trial); \draw[flow] (trial)--(acc);
+\draw[flow] (acc.east) -- node[above] {yes} (keep.west);
+\draw[flow] (keep.south) |- ([yshift=0.18cm]more.east) ;
+\draw[flow] (acc.south) -- node[right] {no (keep target)} (more.north);
+\draw[flow] (more.south) -- node[right] {yes} (bud.north);
+\draw[flow] (more.west) -- node[above] {no: next $i$} ++(-1.6,0) |- (donor.west);
+\draw[flow] (bud.south) -- node[right] {yes} (out.north);
+\draw[flow] (bud.east) -- node[above, pos=0.3] {no: next generation} (bud.east -| keep.east) -- ++(0.7,0) |- ([yshift=0.25cm]eval0.east);
+\end{tikzpicture}

@@ -35,6 +35,9 @@ from concrete_strength.search import (
     run_random_search_multi_seeds,
     run_random_search_single_seed,
 )
+from concrete_strength.extension import extension_finalize, extension_search
+from concrete_strength.extension2 import (
+    ext2_ard_finalize, ext2_ard_search, ext2_replication_finalize, ext2_replication_search)
 from concrete_strength.stage2 import de_search, pilot, synthetic_benchmarks
 from concrete_strength.stage3 import finalize_experiments, refresh_diagnostics
 from concrete_strength.verification import verify_evidence
@@ -46,6 +49,12 @@ app.command()(synthetic_benchmarks)
 app.command("finalize-experiments")(finalize_experiments)
 app.command("refresh-diagnostics")(refresh_diagnostics)
 app.command("verify-evidence")(verify_evidence)
+app.command("extension-search")(extension_search)
+app.command("extension-finalize")(extension_finalize)
+app.command("ext2-ard-search")(ext2_ard_search)
+app.command("ext2-ard-finalize")(ext2_ard_finalize)
+app.command("ext2-replication-search")(ext2_replication_search)
+app.command("ext2-replication-finalize")(ext2_replication_finalize)
 
 
 @app.command()

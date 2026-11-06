@@ -69,11 +69,13 @@ def clone(src):
  return s
 
 original=list(P.slides)
+arch=clone(original[2]);deflow=clone(original[2]);space=clone(original[2]);ext_table=clone(original[2]);ext_chart=clone(original[2]);ext_var=clone(original[2])
 classification=clone(original[2]);algorithm=clone(original[2]);convergence=clone(original[2]);residual=clone(original[2]);learning=clone(original[2]);future=clone(original[2]);refs=clone(original[2])
 order=[original[0],original[1],original[2],original[3],classification,original[4],original[5],original[6],algorithm,original[7],convergence,residual,learning,original[8],original[9],future,refs,original[10]]
+final_order=[original[0],original[1],original[2],original[3],classification,original[4],original[5],arch,original[6],algorithm,deflow,original[7],convergence,space,residual,learning,ext_table,ext_chart,ext_var,original[8],original[9],future,refs,original[10]]
 ids={id(P.part.related_slide(x.rId)):deepcopy(x) for x in P.slides._sldIdLst}
 for node in list(P.slides._sldIdLst):P.slides._sldIdLst.remove(node)
-for s in order:P.slides._sldIdLst.append(ids[id(s)])
+for s in final_order:P.slides._sldIdLst.append(ids[id(s)])
 for i,s in enumerate(P.slides):
  # Replace original page marker and make the footer fit within the slide.
  for sh in s.shapes:
@@ -98,7 +100,7 @@ s=original[2];title(s,'Introduction to Optimization Problems');body(s,'Optimizat
 s=original[3];title(s,'What are Nature-Inspired Algorithms?');body(s,'Search methods motivated by biological, collective or physical processes.\nThey explore candidate solutions and use measured fitness to guide updates.\nGenetic Algorithm: selection, crossover and mutation.\nDifferential Evolution: mutation from population-vector differences.\nParticle Swarm Optimization: individual and social search information.\nNo gradient is required; performance still depends on task and controls.')
 s=classification;title(s,'Classification of Nature-Inspired Algorithms');body(s,'Evolutionary methods: Genetic Algorithms and Differential Evolution.\nSwarm methods: Particle Swarm Optimization and Ant Colony Optimization.\nPhysical-process methods: Simulated Annealing.\nThis project implements DE/rand/1/bin for continuous parameters.\nRandom Search is the equally budgeted tuning comparator.\nThe other algorithms are background methods, not measured baselines.')
 s=original[4];title(s,'Problem Statement');body(s,'Predict concrete compressive strength in MPa from ingredients and age.\nSVR accuracy depends on regularization C, kernel γ and tolerance ε.\nQuestion: does DE improve tuning under an equal evaluation budget?\nCompare default SVR, Random Search–SVR and DE–SVR.\nKeep data splits, preprocessing, search bounds and budgets fixed.\nReport all predefined seeds and the limits of the comparison.')
-s=original[5];title(s,'Dataset and Preprocessing');body(s,'UCI Concrete Compressive Strength: 1,030 rows and eight inputs.\nSeven ingredient quantities (kg/m³) and curing age (days).\nTarget: compressive strength (MPa); no missing values.\n996 unique input tuples; identical inputs stay in the same group.\nDevelopment: 826 rows / 796 groups. Holdout: 204 rows / 200 groups.\nFive group-disjoint CV folds; StandardScaler fitted within each fold.\nUse original features; retain every observation.')
+s=original[5];title(s,'Dataset and Preprocessing');body(s,'UCI Concrete Compressive Strength: 1,030 rows and eight inputs.\nSeven ingredient quantities (kg/m³) and curing age (days).\nTarget: compressive strength (MPa); no missing values.\n996 unique input tuples; identical inputs stay in the same group.\nDevelopment: 826 rows / 796 groups. Holdout: 204 rows / 200 groups.\nFive group-disjoint CV folds; StandardScaler fitted within each fold.\nFrozen runs use original features; the extension uses ln(age). All rows kept.')
 s=original[6];title(s,'Implementation and Results');clear_content(s)
 box(s,1.2,1.9,9.4,8.8,'Pipeline\nRaw-data audit and saved group splits\nStandardScaler → RBF-SVR\nDevelopment CV evaluates candidates\nRefit selected parameters on development\nEvaluate on fixed holdout\nSave histories, predictions and provenance',34)
 box(s,11.4,1.9,9.5,8.8,'DE configuration\nPopulation: 15; F = 0.8; CR = 0.9\n300 calls including initialization\n19 trial generations after initialization\nSeeds: 11, 22, 33, 44, 55\nlog₁₀ C: [−2, 4]; log₁₀ γ: [−5, 1]\nlog₁₀ ε: [−3, 1]',34)
@@ -118,9 +120,9 @@ for i,row in enumerate(rows):
   for p in cell.text_frame.paragraphs:p.font.name='Times New Roman';p.font.size=Pt(28);p.font.bold=i==0;p.font.color.rgb=RGBColor(0,0,0)
 box(s,1.3,7.2,19.3,3,'DE reduces RMSE by about 37.2% relative to default SVR.\nDE and Random Search differ by only 0.0078 MPa (about 0.1%).\nConclusion: tuning helps; the two searches are essentially equivalent here.',34)
 
-def plot(s,t,name,caption):
+def plot(s,t,name,caption,folder='results/final'):
  title(s,t);clear_content(s)
- pic=s.shapes.add_picture(str(ROOT/'results/final'/name), Inches(2), Inches(1.65),height=Inches(8.8))
+ pic=s.shapes.add_picture(str(ROOT/folder/name), Inches(2), Inches(1.65),height=Inches(8.8))
  if pic.width>Inches(18):
   ratio=Inches(18)/pic.width;pic.width=Inches(18);pic.height=int(pic.height*ratio)
  pic.left=int((P.slide_width-pic.width)/2)
@@ -128,8 +130,35 @@ def plot(s,t,name,caption):
 plot(convergence,'Development Validation Convergence','convergence.png','Equal budgets: 300 calls per method per seed, including initialization.')
 plot(residual,'Predictions and Residuals','prediction_residuals.png','Demonstration: DE seed 11, chosen by validation; holdout RMSE 6.3712 MPa.')
 plot(learning,'Learning-Curve Diagnostic','learning_curve.png','Three development-only folds; nested whole groups; fixed parameters; no retuning.')
+ext=json.loads((ROOT/'results/extension/extension_results.json').read_text())
+frozen=data['comparison']
+agg={(a['feature_set'],a['method']):a for a in ext['aggregates']}
+def pm(a,k):return f"{a[k]['mean']:.4f} ± {a[k]['std']:.4f}"
+plot(arch,'System Architecture: Data to Evidence','architecture.png','Four stages: data, splits and features, development-only optimisation, single holdout evaluation.','report/assets')
+plot(deflow,'DE Flowchart (as Implemented)','de-flowchart.png','Frozen-generation donors, clipping, forced crossover coordinate, greedy selection, 300-call budget.','report/assets')
+box(deflow,0.9,2.6,7,7,'Per generation\n15 trial candidates\nDonors from the frozen generation\nGreedy acceptance: trial ≤ target',30)
+box(deflow,14.4,2.6,7,7,'Budget\n15 initial calls\n19 generations × 15 trials\n= 300 calls per seed',30)
+plot(space,'Where Each Search Evaluated Candidates','search_space.png','1,500 candidates per method (5 seeds): DE concentrates in the good region; Random Search stays uniform.','report/assets')
+title(ext_table,'Extension: ln(age) Input for All Three Methods');clear_content(ext_table)
+box(ext_table,1.2,1.7,19.7,1,'Same 204 holdout rows; tuned values are mean ± sample SD over five seeds.',30)
+t2=ext_table.shapes.add_table(4,4,Inches(1.3),Inches(2.9),Inches(19.3),Inches(3.4)).table
+for j,w in enumerate([6.5,4.4,4.4,4.0]):t2.columns[j].width=Inches(w)
+ln={'Default SVR':(frozen['default_svr']['holdout']['rmse'],ext['default_svr']['log_age']['holdout_metrics']),'Random Search–SVR':(frozen['random_search']['holdout']['rmse']['mean'],agg['log_age','RandomSearch']),'DE–SVR':(frozen['de']['holdout']['rmse']['mean'],agg['log_age','rand/1/bin'])}
+rows2=[['Model','Raw RMSE (MPa)','ln(age) RMSE (MPa)','ln(age) R²']]
+for label,(raw_rmse,new) in ln.items():
+ if label=='Default SVR':rows2.append([label,f'{raw_rmse:.4f}',f"{new['rmse']:.4f}",f"{new['r2']:.4f}"])
+ else:rows2.append([label,f'{raw_rmse:.4f}',pm(new,'holdout_rmse'),f"{new['holdout_r2']['mean']:.4f}"])
+for i,row in enumerate(rows2):
+ for j,v in enumerate(row):
+  cell=t2.cell(i,j);cell.text=v;cell.vertical_anchor=MSO_ANCHOR.MIDDLE
+  cell.fill.solid();cell.fill.fore_color.rgb=RGBColor(221,238,245) if i==0 else RGBColor(255,255,255)
+  for para in cell.text_frame.paragraphs:para.font.name='Times New Roman';para.font.size=Pt(26);para.font.bold=i==0;para.font.color.rgb=RGBColor(0,0,0)
+de_n=agg['log_age','rand/1/bin']['holdout_rmse']['mean'];rs_n=agg['log_age','RandomSearch']['holdout_rmse']['mean'];de_o=frozen['de']['holdout']['rmse']['mean']
+box(ext_table,1.3,6.9,19.3,4,f"Representation drives the gain: DE {de_o:.2f} → {de_n:.2f} MPa ({100*(de_o-de_n)/de_o:.1f}% lower).\nDE vs Random Search on ln(age): {abs(rs_n-de_n):.3f} MPa apart; no significance claim.\nln(age) chosen after a development-only probe; holdout was inspected in Stage 1.",32)
+plot(ext_chart,'Representation Comparison','representation_comparison.png','Holdout RMSE, mean ± SD over five optimizer seeds; raw rows are the frozen results.','report/assets')
+plot(ext_var,'DE Variant Ablation (ln(age))','de_variants.png','Same 300-call budget; rand/1/bin vs current-to-best/1/bin vs jDE vs Random Search.','report/assets')
 s=original[8];title(s,'Advantages');body(s,'Explicit, tested DE operators for a three-parameter continuous search.\nBoth tuned methods substantially improve default SVR.\nGroup-aware splits and fold-local scaling reduce leakage risks.\nEqual candidate budgets make the search comparison auditable.\nComplete histories, predictions and locked dependencies support reproduction.\nForty-three tests and a saved evidence audit support technical closeout.')
-s=original[9];title(s,'Limitations');body(s,'One public dataset and one fixed development / holdout partition.\nSeed SD describes optimizer variability, not independent dataset uncertainty.\nDE does not show meaningful superiority over equally budgeted Random Search.\nBaseline and Random Search holdout evaluations preceded final DE evaluation.\nNo independent feature-importance or formal significance study.\nFinite search cannot prove global optimality; no field deployment is validated.')
+s=original[9];title(s,'Limitations');body(s,'One public dataset and one fixed development / holdout partition.\nSeed SD describes optimizer variability, not independent dataset uncertainty.\nDE does not show meaningful superiority over equally budgeted Random Search.\nBaseline and Random Search holdout evaluations preceded final DE evaluation.\nNo feature-importance or formal significance study; ln(age) was motivated by a development probe.\nFinite search cannot prove global optimality; no field deployment is validated.')
 s=future;title(s,'Future Scope');body(s,'Evaluate on external laboratory data using a frozen model.\nUse repeated outer group splits or nested group cross-validation.\nTest DE control settings systematically under matched budgets.\nStudy uncertainty and age-stratified errors with a declared protocol.\nAdd interpretation studies without using holdout feedback for tuning.\nAssess material or environmental benefits only with suitable new evidence.')
 s=refs;title(s,'References');body(s,'[1] I.-C. Yeh, Concrete Compressive Strength, UCI, 1998.\n      Dataset DOI: 10.24432/C5PK67.\n[2] I.-C. Yeh, Cement and Concrete Research, 28(12), 1797–1808, 1998.\n[3] R. Storn and K. Price, Journal of Global Optimization, 11, 341–359, 1997.\n[4] J. Bergstra and Y. Bengio, JMLR, 13, 281–305, 2012.\n[5] A. J. Smola and B. Schölkopf, Statistics and Computing, 14, 199–222, 2004.\n[6] scikit-learn documentation: SVR, StandardScaler and GroupKFold.')
 notes(refs,'Sources: https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength ; https://doi.org/10.1016/S0008-8846(98)00165-3 ; https://doi.org/10.1023/A:1008202821328 ; https://www.jmlr.org/papers/v13/bergstra12a.html ; https://doi.org/10.1023/B:STCO.0000035301.49549.88 ; https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html')
@@ -146,7 +175,7 @@ P.core_properties.comments='Adapted from the supplied BMSCE presentation; origin
 # Strengthen hierarchy within the supplied layout, preserving its visual identity.
 section_labels={2:'Objective and search space',3:'Nature-inspired search',4:'Algorithm families',5:'Prediction task',6:'Dataset and evaluation split',8:'DE/rand/1/bin',13:'What this approach offers',14:'What the evidence cannot establish',15:'Next experiments',16:'Selected sources'}
 for idx,label in section_labels.items():
- s=P.slides[idx]
+ s=order[idx]
  for sh in s.shapes:
   if sh.has_text_frame and sh.top>=Inches(1.8) and sh.top<Inches(10.5) and sh.text:
    sh.top=Inches(2.65);sh.height=Inches(7.9)

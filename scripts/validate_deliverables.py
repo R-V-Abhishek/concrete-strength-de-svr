@@ -52,13 +52,18 @@ with zipfile.ZipFile(source) as z1,zipfile.ZipFile(deck) as z2:
  parts=[n for n in z1.namelist() if n.startswith('ppt/theme/') and n.endswith('.xml')]
  checks['original_theme_parts_byte_preserved']=all(z1.read(n)==z2.read(n) for n in parts)
 checks['native_result_table_count']=sum(x.has_table for s in p.slides for x in s.shapes)
-table=next(x.table for x in p.slides[9].shapes if x.has_table)
+tables=[x.table for s in p.slides for x in s.shapes if x.has_table]
+table=tables[0]
 d=json.loads((root/'results/final/final_results.json').read_text())
 expected=[]
 for key in ['default_svr','random_search','de']:
  h=d['comparison'][key]['holdout']
  expected.append([f'{h[k]:.4f}' if key=='default_svr' else f"{h[k]['mean']:.4f} ± {h[k]['std']:.4f}" for k in ['rmse','mae','r2']])
 checks['ppt_table_matches_frozen_json']=all(table.cell(i+1,j+1).text==expected[i][j] for i in range(3) for j in range(3))
+ext=json.loads((root/'results/extension/extension_results.json').read_text())
+ea={(a['feature_set'],a['method']):a for a in ext['aggregates']}
+et=tables[1]
+checks['ppt_extension_table_matches_extension_json']=(et.cell(1,2).text==f"{ext['default_svr']['log_age']['holdout_metrics']['rmse']:.4f}" and et.cell(2,2).text==f"{ea['log_age','RandomSearch']['holdout_rmse']['mean']:.4f} ± {ea['log_age','RandomSearch']['holdout_rmse']['std']:.4f}" and et.cell(3,2).text==f"{ea['log_age','rand/1/bin']['holdout_rmse']['mean']:.4f} ± {ea['log_age','rand/1/bin']['holdout_rmse']['std']:.4f}")
 receipt=json.loads((root/'docs/validation/presentation-finalization.json').read_text())
 sha=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
 checks['ppt_matches_finalization_receipt']=sha(deck)==receipt['finalSha256']

@@ -351,3 +351,38 @@ Content corrections: "Paper Organization" is now "Report Organization"; the cros
 Built with XeLaTeX, Biber and latexmk (TinyTeX; installed the missing `algorithms`/`algorithmicx` packages); the log has no warnings, undefined references or overfull/underfull boxes. Report remains 35 pages. Rendered and inspected every page. `scripts/validate_deliverables.py` passes; `docs/validation/deliverables.json` now carries the new report hash. No experiments were rerun. Signatures, uploads and presentation evidence remain pending.
 
 Follow-up: certificate HOD signature block flushed right, spacing added under "Examiners", and the Acknowledgement and Abstract headings centred (`\CenteredStarChapter`); rebuilt with a clean log, 35 pages, validator passes, report hash in `docs/validation/deliverables.json` updated.
+
+
+### Log-age extension, diagrams and extra charts — 5 November 2026
+
+Branch `codex/log-age-extension`. Goal: find improvements beyond the frozen Random Search/DE results, add an architecture diagram and more charts.
+
+**Finding.** A development-only probe (scipy DE, seed 11, five saved folds, nothing saved, no holdout access) gave CV RMSE 5.85 (raw) vs 4.97 (ln(age)) vs 4.96 (+ratios) vs 4.99 (+log target). The optimizer was not the bottleneck; the age representation was. Disclosed in the report: ln(age) is probe-motivated and the holdout was inspected in Stage 1.
+
+**Protocol.** `docs/protocol-extension.md` was committed before any extension run (commit 0e31cfb). Same splits/folds/bounds/budget/seeds; frozen raw results reused, not rerun; default SVR, Random Search and DE all on ln(age); ablations: DE current-to-best/1/bin, jDE, water ratios.
+
+**Code.** `data.py` (`FEATURE_SETS`, `add_engineered_features`), optional `feature_columns` through `evaluation.py`/`search.py`, DE `strategy` option in `de.py` (default rand/1/bin unchanged and checked against the saved seed-11 history), `extension.py` with CLI `extension-search` and `extension-finalize`. Tests: 52 pass (`tests/test_extension.py` is new).
+
+**Commands.** `uv run concrete-strength extension-search` (25 runs, ~1 h, clean tree at launch, 300 calls each); `uv run concrete-strength extension-finalize` (one holdout pass); `shasum` manifest in `results/extension/SHA256SUMS`.
+
+**Results (holdout RMSE, MPa, mean ± SD over 5 seeds).** Default SVR 9.9069 raw / 7.4780 ln(age); Random Search 6.2328 / 4.9700 ± 0.2656; DE 6.2250 / 4.8402 ± 0.1039 (22.2% below frozen DE); current-to-best/1/bin 4.8363 ± 0.0582; jDE 4.8890 ± 0.0820; DE + ratios 4.7849 ± 0.0630. Validation RMSE: RS 5.0171, DE 4.9670, current-to-best 4.9028, jDE 4.8976, ratios 4.9611. Demonstration (lowest validation): current-to-best seed 55, validation 4.8606, holdout 4.8672. DE is 0.13 MPa below Random Search and less variable, untested for significance; variants and ratios are within seed SD.
+
+**Deliverables.** TikZ architecture and DE flowchart (`report/figures/`, PNGs via `report/scripts/render_figures.sh` + `crop_png.py`); charts via `scripts/make_report_figures.py` (EDA, correlation, search-space, representation comparison, DE variants, extension predictions) and generated `report/tables/extension.tex`. Report: new Section 7.12 plus updates to Ch5, Ch6, Ch8, abstract, conclusion, future work, jDE reference; 43 pages, clean log. PPT: 24 slides (architecture, flowchart, search-space, extension table/chart/variants added).
+
+**Verification.** `pytest` 52 passed; `verify-stage1`, `verify-evidence` (alternate output path), `results/final/SHA256SUMS` and extension checksums pass; `git diff` of `results/final`, `results/de`, `results/baseline`, `configs/experiment.json`, `uv.lock` is empty. Report rendered and extension/architecture/flowchart pages inspected. TeX packages came from a scratch user tree and Biber 2.22 from Homebrew; no project dependency or lockfile changed.
+
+**Not done / limits.** No renderer for slides (`soffice` absent): new slides were checked programmatically (shapes in bounds, table values match JSON), not visually; `presentation/*.pdf` preview is stale. `docs/validation/presentation-finalization.json` is the old first-party finalization receipt, so `validate_deliverables.py` reports `ppt_matches_finalization_receipt: false` (every other check passes). Registration, signatures, upload and presentation remain unverified.
+
+## Extension 2 (6 November 2026): ARD kernel search space and split replication
+
+**Why.** After Extension 1 the DE-vs-Random-Search gap (0.13 MPa) was smaller than seed spread. A development-only, unsaved probe of a per-feature-gamma (ARD) kernel (CV only, no holdout, no Random Search arm) suggested a lower CV RMSE and motivated testing whether DE gains more in a 10-D space. Disclosed in the report; the holdout was already seen in Stage 1 and Extension 1.
+
+**Protocol.** `docs/protocol-extension2.md` + `configs/extension2.json` committed before any run (commit c37b0db). E2a: ARD (10-D) vs shared gamma (3-D control), Random Search vs DE/rand/1/bin, 1,500 calls, population 5 x dimension, 5 seeds. E2b: `log_age`, Random Search vs DE, 300 calls, 5 seeds, five new group-disjoint outer splits (`random_state` 101-105).
+
+**Code.** `evaluation.py` (`build_ard_pipeline`, `evaluate_ard_cv`: columns scaled by sqrt(gamma_j), SVR gamma = 1; equal gammas reproduce the standard RBF-SVR, tested), `extension2.py` (process-parallel runs, 7 workers) and CLI `ext2-ard-search`, `ext2-ard-finalize`, `ext2-replication-search`, `ext2-replication-finalize`. Searches ran with `OMP_NUM_THREADS=1`; runtimes under parallel load are indicative only. Tests: 57 pass.
+
+**Results (mean ± SD over 5 seeds; validation / holdout RMSE, MPa).** 1,500 calls: shared-gamma Random Search 4.9185 / 4.8381 ± 0.1064; shared-gamma DE 4.8581 ± 0.0000 / 4.8699 ± 0.0060; ARD Random Search 5.1116 / 4.9693 ± 0.3940; ARD DE 4.8811 / 4.6787 ± 0.4899. Random Search degrades in 10-D, DE does not (validation advantage 0.06 -> 0.23 MPa), but ARD did not improve validation RMSE over the shared kernel, and the probe's lower CV value was not reproduced. Replication (d = RS - DE; positive favours DE): validation d > 0 on all six splits (mean 0.071, approx. 95% t-interval 0.045-0.097); holdout d > 0 on five of six (mean 0.118, interval 0.012-0.224; new five alone 0.116, interval -0.024 to 0.256). Splits overlap, so intervals are indicative only.
+
+**Deliverables.** Report Section 7.13 (44 pages, clean log). Slides were not updated for Extension 2. Evidence in `results/extension2/` with its own `SHA256SUMS`; tag `extension2-2026-11-06` (local).
+
+**Verification.** `pytest` 57 passed; `verify-stage1` passes; checksums pass; `git diff` of the frozen evidence, `results/extension`, `configs/experiment.json`, `uv.lock` and `data` is empty.
