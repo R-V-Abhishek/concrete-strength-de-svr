@@ -4,10 +4,11 @@
 set -eu
 cd "$(dirname "$0")/.."
 mkdir -p build/figures
-for name in architecture de-flowchart; do
+for name in architecture de-flowchart de-flowchart-wide; do
+  geom='a4paper,margin=0.5in'; [ "$name" = de-flowchart-wide ] && geom='paperwidth=70cm,paperheight=40cm,margin=1cm'
   cat > "build/figures/$name-wrap.tex" <<TEX
 \documentclass[12pt]{article}
-\usepackage[a4paper,margin=0.5in]{geometry}
+\usepackage[$geom]{geometry}
 \usepackage{fontspec,amsmath,amssymb,xcolor,tikz}
 \usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc,shapes.geometric}
 \setmainfont{Times New Roman}

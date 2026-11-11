@@ -1,0 +1,29 @@
+% Widescreen DE flowchart for the presentation (same logic as de-flowchart.tex, snake layout, larger type).
+{\hyphenpenalty=10000 \exhyphenpenalty=10000 \tolerance=10000
+\begin{tikzpicture}[
+  font=\Large, >={Stealth[length=3mm]}, node distance=2.4cm,
+  proc/.style={draw, rounded corners=3pt, fill=blue!8, draw=blue!60!black, line width=0.8pt, align=center, text width=6.2cm, minimum height=2.9cm, inner sep=4pt},
+  io/.style={proc, fill=green!12, draw=green!50!black},
+  dec/.style={draw, diamond, aspect=2.2, fill=orange!15, draw=orange!70!black, line width=0.8pt, align=center, inner sep=0pt, text width=3.4cm, minimum width=6.2cm, minimum height=2.9cm},
+  flow/.style={->, line width=1pt},
+  lab/.style={font=\large, fill=white, inner sep=2pt}]
+\node[io] (init) {\textbf{1. Initialize}\\15 candidates,\\uniform in log$_{10}$ box};
+\node[proc, right=of init] (eval0) {\textbf{2. Evaluate all 15}\\mean 5-fold CV RMSE\\(calls 1--15)};
+\node[proc, right=of eval0] (donor) {\textbf{3. Draw 3 donors}\\$r_1,r_2,r_3\neq i$ from\\the frozen generation};
+\node[proc, right=of donor] (mut) {\textbf{4. Mutate}\\$v=x_{r_1}+0.8(x_{r_2}-x_{r_3})$\\clip to bounds};
+\node[proc, right=of mut] (cross) {\textbf{5. Crossover}\\binomial, $CR=0.9$\\one coordinate forced};
+\node[proc, below=3.2cm of cross] (trial) {\textbf{6. Evaluate trial}\\1 objective call};
+\node[dec, below=3.2cm of mut] (acc) {trial $\le$ target?};
+\node[dec, below=3.2cm of donor] (more) {all 15 targets done?};
+\node[dec, below=3.2cm of eval0] (bud) {300 calls used?};
+\node[io, below=3.2cm of init] (out) {\textbf{Return}\\best-CV candidate\\$(C,\gamma,\varepsilon)=10^{x}$};
+\draw[flow] (init)--(eval0); \draw[flow] (eval0)--(donor); \draw[flow] (donor)--(mut); \draw[flow] (mut)--(cross);
+\draw[flow] (cross)--(trial);
+\draw[flow] (trial)--(acc);
+\draw[flow] (acc)--(more) node[lab, midway, yshift=0.9cm] {yes: replace};
+\path (acc) -- (more) node[lab, midway, yshift=-0.9cm] {no: keep};
+\draw[flow] (more)--(bud) node[lab, midway, yshift=0.5cm] {yes};
+\draw[flow] (bud)--(out) node[lab, midway, yshift=0.5cm] {yes};
+\draw[flow] (more.north) -- node[lab, pos=0.5] {no: next target} (donor.south);
+\draw[flow] (bud.north) -- node[lab, pos=0.5] {no: next generation} (eval0.south);
+\end{tikzpicture}}
