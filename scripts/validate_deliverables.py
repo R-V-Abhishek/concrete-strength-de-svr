@@ -18,13 +18,12 @@ bordered=[]
 for page in r.pages:
  ops=ContentStream(page.get_contents(),r).operations
  widths=[float(a[0]) for a,b in ops if b==b'w']
- moves=[tuple(float(v) for v in a) for a,b in ops if b==b'm']
- greys=[float(a[0]) for a,b in ops if b==b'G']
- curves=sum(b==b'c' for a,b in ops)
- bordered.append(any(abs(x-2.39103)<.01 for x in widths) and any(abs(x-36)<.01 and abs(y-805.9)<.1 for x,y in moves) and any(abs(x-.45)<.001 for x in greys) and curves>=8 and any(abs(x-1.19552)<.01 for x in widths))
+ navy=[tuple(round(float(v),2) for v in a) for a,b in ops if b==b'RG']
+ moves=[tuple(round(float(v),1) for v in a) for a,b in ops if b==b'm']
+ bordered.append(any(abs(x-1.59403)<.01 for x in widths) and any(abs(x-.49813)<.01 for x in widths) and (0,.2,.4) in navy and (34.0,34.0) in moves and (38.3,38.3) in moves)
 checks['border_on_every_page']=all(bordered)
 checks['bordered_page_count']=sum(bordered)
-checks['border_style']='Double border: black!55 grey; 2.4pt outer / 1.2pt inner; 0.5 / 0.55-inch insets; 6pt / 3pt rounded corners'
+checks['border_style']='Double navy border (0,51,102): 1.6pt outer / 0.5pt inner; 1.2 / 1.35 cm insets; square corners'
 text='\n'.join(x.extract_text() for x in r.pages)
 compact=lambda s: re.sub('[^a-z0-9]','',s.lower())
 normalized=compact(text)

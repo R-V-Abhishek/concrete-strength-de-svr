@@ -4,7 +4,7 @@ Date: 1 November 2026. Local document preparation is complete; signatures, profe
 
 ## Deliverables
 
-- `report/concrete-strength-de-svr-report.pdf`: 45 pages (Extensions 1 and 2 added 5-11 Nov 2026); editable source in `report/main.tex`, `metadata.tex`, `chapters/`, `frontmatter/`, `tables/`, `assets/` and `latex/`.
+- `report/concrete-strength-de-svr-report.pdf`: 49 pages (Extensions 1 and 2 added 5-11 Nov 2026; reference-style redesign 11 Nov); editable source in `report/main.tex`, `metadata.tex`, `chapters/`, `frontmatter/`, `tables/`, `assets/` and `latex/`.
 - `presentation/concrete-strength-de-svr-presentation.pptx`: 28 editable slides (11 Nov 2026 rebuild: Extension 2, agenda with slide ranges, section footers, speaker notes); the PDF preview was rendered through Keynote, not PowerPoint. Rebuild source: `presentation/scripts/build_presentation.py`.
 - Central library: `/Users/rva/Projects/BMSCE_Academic_Templates/`. The previous `BMSCE_Thesis_Guidelines_CSE_DS` folder is preserved completely at `archive/original-supplied-folder/` inside this renamed library.
 
@@ -54,3 +54,8 @@ Obtain actual student/faculty signatures and endorsements, confirm repository ac
 The dataset's formal citation uses 1998, as recommended by UCI; its 2007 donation date is distinct. The dataset entry prints its year and DOI. Holland is the linked 1992 MIT Press edition, with original publication in 1975 stated explicitly. The Random Search discussion attributes comparison with grid/manual search to Bergstra and Bengio; DE comparisons depend on this project's saved evidence. Yeh's original DOI and its generated PDF hyperlink are correct. These changes were rebuilt, rendered and validated without altering the experimental results or the 35-page / 18-slide counts.
 
 Primary records checked: [UCI dataset citation](https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength), [MIT Press edition](https://mitpress.mit.edu/9780262581110/adaptation-in-natural-and-artificial-systems/), [JMLR Random Search paper](https://www.jmlr.org/papers/v13/bergstra12a.html).
+
+
+## Report redesign (11 November 2026)
+
+At the user's request the report borrows the design of `recycleguard/docs/report/report.pdf` (Agentic AI course): navy `#003366` accent; "CHAPTER n" in navy above an uppercase centred bold title (unnumbered headings also uppercase and centred); 14.4pt bold section headings; double navy border (1.6pt outer, 0.5pt inner, square corners) replacing the grey rounded border, still on every page; double navy rules under the italic right-aligned running header and above the footer in the main body; front matter shows only a centred page number; blue hyperlinks (`colorlinks`, `linktoc=all`) so the contents, list of figures and list of tables are visibly clickable; microtype; the reference's code-listing style; margins 1.25in left / 1in right; 1.5em paragraph indent. Footer clearance: bottom margin 1.2in, footskip 24pt, so the footer baseline sits about 0.3in above the inner border. Deliberate exceptions: Times New Roman is kept (the college formatting guideline) instead of Computer Modern, and the border is kept on body pages because the user asked for it earlier. `scripts/validate_deliverables.py` now checks the navy border. Rebuilt with a clean log (no warnings or over/underfull boxes), 49 pages.
