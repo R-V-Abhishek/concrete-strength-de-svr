@@ -71,8 +71,17 @@ def clone(src):
 original=list(P.slides)
 arch=clone(original[2]);deflow=clone(original[2]);space=clone(original[2]);ext_table=clone(original[2]);ext_chart=clone(original[2]);ext_var=clone(original[2])
 classification=clone(original[2]);algorithm=clone(original[2]);convergence=clone(original[2]);residual=clone(original[2]);learning=clone(original[2]);future=clone(original[2]);refs=clone(original[2])
-order=[original[0],original[1],original[2],original[3],classification,original[4],original[5],original[6],algorithm,original[7],convergence,residual,learning,original[8],original[9],future,refs,original[10]]
-final_order=[original[0],original[1],original[2],original[3],classification,original[4],original[5],arch,original[6],algorithm,deflow,original[7],convergence,space,residual,learning,ext_table,ext_chart,ext_var,original[8],original[9],future,refs,original[10]]
+objectives=clone(original[2]);ard=clone(original[2]);rep=clone(original[2]);findings=clone(original[2])
+intro,nia,problem,dataset,impl,metrics,adv,lim,thanks=original[2],original[3],original[4],original[5],original[6],original[7],original[8],original[9],original[10]
+final_order=[original[0],original[1],intro,nia,classification,problem,objectives,dataset,arch,impl,algorithm,deflow,metrics,convergence,space,residual,learning,ext_table,ext_chart,ext_var,ard,rep,findings,adv,lim,future,refs,thanks]
+# Sections drive the agenda, footer tags and slide-number ranges, so they cannot drift from the deck order.
+SECTIONS=[('Background','Optimization problems, nature-inspired algorithms, classification',[intro,nia,classification]),
+('Problem and Method','Problem statement, objectives, dataset, architecture, implementation, DE operators',[problem,objectives,dataset,arch,impl,algorithm,deflow]),
+('Results','Performance metrics and benchmarking, convergence, search space, predictions, learning curve',[metrics,convergence,space,residual,learning]),
+('Extensions','ln(age) representation, DE variants, ARD kernel, replication on new splits',[ext_table,ext_chart,ext_var,ard,rep]),
+('Conclusions','Key findings, advantages, limitations, future scope, references',[findings,adv,lim,future,refs])]
+section_of={id(s):(k+1,name) for k,(name,_,ss) in enumerate(SECTIONS) for s in ss}
+NSLIDES=len(final_order)
 ids={id(P.part.related_slide(x.rId)):deepcopy(x) for x in P.slides._sldIdLst}
 for node in list(P.slides._sldIdLst):P.slides._sldIdLst.remove(node)
 for s in final_order:P.slides._sldIdLst.append(ids[id(s)])
@@ -80,7 +89,7 @@ for i,s in enumerate(P.slides):
  # Replace original page marker and make the footer fit within the slide.
  for sh in s.shapes:
   if not sh.has_text_frame:continue
-  if '‹#›' in sh.text:text(sh,str(i+1),16,PP_ALIGN.RIGHT)
+  if '‹#›' in sh.text:text(sh,f'{i+1} / {NSLIDES}',16,PP_ALIGN.RIGHT);sh.left=Inches(18.2);sh.width=Inches(3.4)
   if 'Department of Computer Science Engineering' in sh.text:
    sh.left=Inches(5);sh.width=Inches(12);text(sh,'Department of CSE (Data Science) | AY 2026–27',16,PP_ALIGN.CENTER)
  notes(s,'Concrete Strength DE–SVR. Evidence: docs/technical-closeout.md and results/final/final_results.json. All tuned aggregates are five optimizer seeds on one fixed holdout. No significant superiority over Random Search is claimed.')
@@ -95,7 +104,13 @@ for sh in list(s.shapes):
  if sh.left<0:sh.left=0
  if sh.width>P.slide_width:sh.width=P.slide_width
  if sh.left+sh.width>P.slide_width:sh.width=P.slide_width-sh.left
-s=original[1];title(s,'Table of Contents');text(s.shapes[4],'Introduction to Optimization Problems\nWhat are Nature-Inspired Algorithms?\nClassification of Nature-Inspired Algorithms\nProblem Statement and Dataset\nImplementation and Results\nPerformance Metrics and Benchmarking\nAdvantages and Limitations\nFuture Scope and References',36)
+s=original[1];title(s,'Table of Contents');clear_content(s)
+pos={id(x):n+1 for n,x in enumerate(final_order)}
+box(s,1.2,1.9,2,.8,'No.',30,bold=True,color=BLUE);box(s,3.2,1.9,15,.8,'Section and topics',30,bold=True,color=BLUE);box(s,18.2,1.9,3.4,.8,'Slides',30,bold=True,color=BLUE)
+for k,(name,topics,ss) in enumerate(SECTIONS):
+ y=2.9+k*1.55;a,b=pos[id(ss[0])],pos[id(ss[-1])]
+ box(s,1.2,y,2,.7,str(k+1),34,bold=True,color=BLUE);box(s,3.2,y,15,.7,name,34,bold=True)
+ box(s,3.2,y+.62,15,.7,topics,22);box(s,18.2,y,3.4,.7,f'{a}–{b}',34)
 s=original[2];title(s,'Introduction to Optimization Problems');body(s,'Optimization selects parameters that minimize an objective.\nHere: minimize five-fold development RMSE of an RBF-SVR.\nDecision variables: log₁₀(C), log₁₀(γ), log₁₀(ε).\nConstraints: fixed parameter bounds and 300 objective calls.\nThe objective is evaluated by fitting models; derivatives are unavailable.\nHoldout performance evaluates fixed selections after tuning.')
 s=original[3];title(s,'What are Nature-Inspired Algorithms?');body(s,'Search methods motivated by biological, collective or physical processes.\nThey explore candidate solutions and use measured fitness to guide updates.\nGenetic Algorithm: selection, crossover and mutation.\nDifferential Evolution: mutation from population-vector differences.\nParticle Swarm Optimization: individual and social search information.\nNo gradient is required; performance still depends on task and controls.')
 s=classification;title(s,'Classification of Nature-Inspired Algorithms');body(s,'Evolutionary methods: Genetic Algorithms and Differential Evolution.\nSwarm methods: Particle Swarm Optimization and Ant Colony Optimization.\nPhysical-process methods: Simulated Annealing.\nThis project implements DE/rand/1/bin for continuous parameters.\nRandom Search is the equally budgeted tuning comparator.\nThe other algorithms are background methods, not measured baselines.')
@@ -154,34 +169,40 @@ for i,row in enumerate(rows2):
   cell.fill.solid();cell.fill.fore_color.rgb=RGBColor(221,238,245) if i==0 else RGBColor(255,255,255)
   for para in cell.text_frame.paragraphs:para.font.name='Times New Roman';para.font.size=Pt(26);para.font.bold=i==0;para.font.color.rgb=RGBColor(0,0,0)
 de_n=agg['log_age','rand/1/bin']['holdout_rmse']['mean'];rs_n=agg['log_age','RandomSearch']['holdout_rmse']['mean'];de_o=frozen['de']['holdout']['rmse']['mean']
-box(ext_table,1.3,6.9,19.3,4,f"Representation drives the gain: DE {de_o:.2f} → {de_n:.2f} MPa ({100*(de_o-de_n)/de_o:.1f}% lower).\nDE vs Random Search on ln(age): {abs(rs_n-de_n):.3f} MPa apart; no significance claim.\nln(age) chosen after a development-only probe; holdout was inspected in Stage 1.",32)
+box(ext_table,1.3,6.9,19.3,4,f"Representation drives the gain: DE {de_o:.3f} → {de_n:.3f} MPa ({100*(de_o-de_n)/de_o:.1f}% lower).\nDE vs Random Search on ln(age): {abs(rs_n-de_n):.3f} MPa apart; no significance claim.\nln(age) chosen after a development-only probe; holdout was inspected in Stage 1.",32)
 plot(ext_chart,'Representation Comparison','representation_comparison.png','Holdout RMSE, mean ± SD over five optimizer seeds; raw rows are the frozen results.','report/assets')
 plot(ext_var,'DE Variant Ablation (ln(age))','de_variants.png','Same 300-call budget; rand/1/bin vs current-to-best/1/bin vs jDE vs Random Search.','report/assets')
-s=original[8];title(s,'Advantages');body(s,'Explicit, tested DE operators for a three-parameter continuous search.\nBoth tuned methods substantially improve default SVR.\nGroup-aware splits and fold-local scaling reduce leakage risks.\nEqual candidate budgets make the search comparison auditable.\nComplete histories, predictions and locked dependencies support reproduction.\nForty-three tests and a saved evidence audit support technical closeout.')
-s=original[9];title(s,'Limitations');body(s,'One public dataset and one fixed development / holdout partition.\nSeed SD describes optimizer variability, not independent dataset uncertainty.\nDE does not show meaningful superiority over equally budgeted Random Search.\nBaseline and Random Search holdout evaluations preceded final DE evaluation.\nNo feature-importance or formal significance study; ln(age) was motivated by a development probe.\nFinite search cannot prove global optimality; no field deployment is validated.')
-s=future;title(s,'Future Scope');body(s,'Evaluate on external laboratory data using a frozen model.\nUse repeated outer group splits or nested group cross-validation.\nTest DE control settings systematically under matched budgets.\nStudy uncertainty and age-stratified errors with a declared protocol.\nAdd interpretation studies without using holdout feedback for tuning.\nAssess material or environmental benefits only with suitable new evidence.')
+s=objectives;title(s,'Objectives and Scope');body(s,'RQ1. Does tuning improve a default RBF-SVR? (frozen study)\nRQ2. Does DE beat equally budgeted Random Search? (frozen study)\nRQ3. How much does the input representation matter? (ln(age))\nRQ4. Does DE keep an edge in a 10-D search space and on new splits?\nScope: one UCI dataset, one RBF-SVR, explicit DE/rand/1/bin.\nExtensions were pre-registered before they were run.')
+ard_res={(a['space'],a['method']):a for a in json.loads((ROOT/'results/extension2/ard_results.json').read_text())['aggregates']}
+rep_all=json.loads((ROOT/'results/extension2/replication_results.json').read_text());rep_res=rep_all['summary']
+rep_res['splits_de_better_validation']=sum(x['d_validation']>0 for x in rep_all['per_split'])+(rep_all['original_split']['d_validation']>0)
+plot(ard,'Extension 2a: ARD Kernel (10-D Search Space)','ard_comparison.png','1,500 calls, five seeds; y-axis starts at 4.0 MPa. ARD does not improve validation RMSE over a shared γ.','report/assets')
+plot(rep,'Extension 2b: Replication on Five New Splits','replication_gap.png',f"DE lower validation RMSE on {rep_res['splits_de_better_validation']}/{rep_res['splits_total']} splits, holdout on {rep_res['splits_de_better_holdout']}/{rep_res['splits_total']}; mean holdout gap {rep_res['all_splits_holdout']['mean']:.3f} MPa (indicative; splits overlap).",'report/assets')
+s=findings;title(s,'Key Findings');body(s,f"Tuning works: DE cuts holdout RMSE {100*(1-de_o/frozen['default_svr']['holdout']['rmse']):.1f}% ({frozen['default_svr']['holdout']['rmse']:.3f} → {de_o:.3f} MPa).\nOn frozen features DE and Random Search are {abs(frozen['random_search']['holdout']['rmse']['mean']-de_o):.4f} MPa apart.\nRepresentation matters most: ln(age) lowers DE to {de_n:.3f} MPa ({100*(de_o-de_n)/de_o:.1f}%).\nDE keeps a small edge of about {rep_res['all_splits_holdout']['mean']:.1f} MPa on {rep_res['splits_de_better_holdout']} of {rep_res['splits_total']} splits; no significance claim.\nARD (10-D) gave no accuracy gain; Random Search degrades there, DE does not.")
+s=original[8];title(s,'Advantages');body(s,'Explicit, tested DE operators for a three-parameter continuous search.\nBoth tuned methods substantially improve default SVR.\nGroup-aware splits and fold-local scaling reduce leakage risks.\nEqual candidate budgets make the search comparison auditable.\nComplete histories, predictions and locked dependencies support reproduction.\nFifty-seven passing tests, checksummed evidence and a saved audit support reproduction.')
+s=original[9];title(s,'Limitations');body(s,'One public dataset; one main holdout (Extension 2 adds five overlapping splits).\nSeed SD describes optimizer variability, not independent dataset uncertainty.\nDE does not show meaningful superiority over equally budgeted Random Search.\nBaseline and Random Search holdout evaluations preceded final DE evaluation.\nNo feature-importance or significance study; ln(age) and ARD came from development probes.\nFinite search cannot prove global optimality; no field deployment is validated.')
+s=future;title(s,'Future Scope');body(s,'Evaluate on external laboratory data using a frozen model.\nUse non-overlapping outer splits or nested group cross-validation.\nTest DE control settings systematically under matched budgets.\nStudy uncertainty and age-stratified errors with a declared protocol.\nAdd interpretation studies without using holdout feedback for tuning.\nAssess material or environmental benefits only with suitable new evidence.')
 s=refs;title(s,'References');body(s,'[1] I.-C. Yeh, Concrete Compressive Strength, UCI, 1998.\n      Dataset DOI: 10.24432/C5PK67.\n[2] I.-C. Yeh, Cement and Concrete Research, 28(12), 1797–1808, 1998.\n[3] R. Storn and K. Price, Journal of Global Optimization, 11, 341–359, 1997.\n[4] J. Bergstra and Y. Bengio, JMLR, 13, 281–305, 2012.\n[5] A. J. Smola and B. Schölkopf, Statistics and Computing, 14, 199–222, 2004.\n[6] scikit-learn documentation: SVR, StandardScaler and GroupKFold.')
 notes(refs,'Sources: https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength ; https://doi.org/10.1016/S0008-8846(98)00165-3 ; https://doi.org/10.1023/A:1008202821328 ; https://www.jmlr.org/papers/v13/bergstra12a.html ; https://doi.org/10.1023/B:STCO.0000035301.49549.88 ; https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html')
 s=original[10]
 # Thank-you original uses a different shape index arrangement.
 for sh in s.shapes:
  if sh.has_text_frame and 'THANK YOU' in sh.text:text(sh,'THANK YOU',48,PP_ALIGN.CENTER,color=BLUE)
-box(s,2,8.5,18,1.5,'Both tuned methods improve default SVR.\nDE and Random Search perform essentially equivalently.',34,PP_ALIGN.CENTER)
+box(s,2,8.0,18,2.2,'Tuning helps, and the input representation helps most.\nDE’s edge over Random Search is small (about 0.1 MPa) and untested for significance.\nQuestions and discussion',32,PP_ALIGN.CENTER)
 box(s,1.5,10.2,19,.7,'github.com/R-V-Abhishek/concrete-strength-de-svr',26,PP_ALIGN.CENTER)
 P.core_properties.title='Concrete Compressive Strength Prediction Using DE–SVR'
 P.core_properties.author='R V Abhishek; Sushanth S; Ullas N; Vedantha V V'
 P.core_properties.subject='Bio-inspired Algorithms AAT, 23DS7BSBIO, AY 2026–27'
 P.core_properties.comments='Adapted from the supplied BMSCE presentation; original reference retained.'
 # Strengthen hierarchy within the supplied layout, preserving its visual identity.
-section_labels={2:'Objective and search space',3:'Nature-inspired search',4:'Algorithm families',5:'Prediction task',6:'Dataset and evaluation split',8:'DE/rand/1/bin',13:'What this approach offers',14:'What the evidence cannot establish',15:'Next experiments',16:'Selected sources'}
-for idx,label in section_labels.items():
- s=order[idx]
+section_labels=[(intro,'Objective and search space'),(nia,'Nature-inspired search'),(classification,'Algorithm families'),(problem,'Prediction task'),(objectives,'Research questions'),(dataset,'Dataset and evaluation split'),(algorithm,'DE/rand/1/bin'),(findings,'Summary of evidence'),(adv,'What this approach offers'),(lim,'What the evidence cannot establish'),(future,'Next experiments'),(refs,'Selected sources')]
+for s,label in section_labels:
  for sh in s.shapes:
   if sh.has_text_frame and sh.top>=Inches(1.8) and sh.top<Inches(10.5) and sh.text:
    sh.top=Inches(2.65);sh.height=Inches(7.9)
    for para in sh.text_frame.paragraphs:
     para.font.size=Pt(36);para.space_after=Pt(23)
-   if idx==16:
+   if s is refs:
     for para in sh.text_frame.paragraphs:para.font.size=Pt(32);para.space_after=Pt(14)
  box(s,1.2,1.75,19.7,.75,label,39,bold=True,color=BLUE)
 for sh in original[6].shapes:
@@ -190,6 +211,40 @@ for sh in original[6].shapes:
 for j in range(4):
  cell=table.cell(3,j)
  for para in cell.text_frame.paragraphs:para.font.bold=True;para.font.color.rgb=BLUE
+for s in final_order:
+ if id(s) in section_of:
+  k,name=section_of[id(s)];foot=[x for x in s.shapes if x.has_text_frame and 'AY 2026' in x.text][0]
+  box(s,1.2,foot.top/914400,6.5,foot.height/914400,f'Section {k}: {name}',16,PP_ALIGN.LEFT,color=BLUE)
+NOTES=['Introduce the project, the team and the guide. Frozen study plus two pre-registered extensions.',
+'Five sections; slide ranges are computed from the deck order. All mandatory headings are covered.',
+'Optimization framing: three log-scaled SVR parameters, 300 objective calls, no derivatives.',
+'Nature-inspired search in general; DE is the one implemented method.',
+'DE/rand/1/bin is the implemented method; Random Search is the measured comparator.',
+'Problem: tune C, gamma and epsilon fairly under an equal budget. Source: docs/protocol.md.',
+'Four research questions; RQ3 and RQ4 come from the extensions (docs/protocol-extension*.md).',
+'UCI data, 1,030 rows; group-disjoint splits avoid repeated-tuple leakage. Source: data/processed/splits_manifest.json.',
+'Four-stage architecture: data, splits and features, development-only optimisation, single holdout evaluation.',
+'Pipeline and DE configuration. Source: configs/experiment.json and docs/protocol.md.',
+'Explicit operators with deferred greedy selection; code in src/concrete_strength/de.py.',
+'Flowchart as implemented; budget is 15 + 19 x 15 = 300 calls.',
+'Frozen holdout metrics. Source: results/final/final_results.json. Mean and sample SD over five seeds.',
+'Convergence on validation RMSE for all ten runs. Source: results/final/convergence.png.',
+'Where each method sampled; DE concentrates in the good region. Source: report/assets/search_space.png.',
+'Validation-selected demonstration, not an average. Source: results/final/prediction_residuals.png.',
+'Development-only learning curve, three folds. Source: results/final/learning_curve.csv.',
+'Extension 1 table. Source: results/extension/extension_results.json. ln(age) came from a development-only probe.',
+'Representation comparison chart. Source: report/assets/representation_comparison.png.',
+'DE variants and water ratios are indistinguishable within seed SD. Source: results/extension/.',
+'Extension 2a: 1,500 calls. Random Search degrades in 10-D, DE does not, but ARD gives no accuracy gain. Source: results/extension2/ard_results.json.',
+'Extension 2b: five new overlapping splits. Intervals are indicative only. Source: results/extension2/replication_results.json.',
+'Summary of evidence; every number comes from the saved results.',
+'Advantages of the approach and its evidence trail.',
+'Limitations: single dataset, overlapping splits, no significance test, probe-motivated extensions.',
+'Future scope: external data, nested CV, systematic DE controls.',
+'Selected sources; full bibliography in the report.',
+'Close with the two main messages and invite questions. Repository link on slide.']
+assert len(NOTES)==NSLIDES
+for s,n in zip(final_order,NOTES):notes(s,n)
 # Source background rectangles overshoot by a few points; fit them to the canvas.
 for s in P.slides:
  bg=s.shapes[0]

@@ -1,7 +1,8 @@
 """Regenerate the extra report/PPT charts from saved evidence (no training).
 
-Usage: uv run python scripts/make_report_figures.py evidence|extension
-`evidence` reads the frozen data/results; `extension` reads results/extension/.
+Usage: uv run python scripts/make_report_figures.py evidence|extension|extension2|tables
+`evidence` reads the frozen data/results; `extension` reads results/extension/;
+`extension2` reads results/extension2/.
 Outputs go to report/assets/.
 """
 import json
@@ -145,6 +146,40 @@ def extension_figures() -> None:
     plt.close(fig)
 
 
+def extension2_figures() -> None:
+    """ARD search-space comparison and per-split Random Search minus DE gap (results/extension2/)."""
+    ard = json.loads(Path("results/extension2/ard_results.json").read_text())["aggregates"]
+    labels = {("shared", "RandomSearch"): "Shared \u03b3 (3-D)\nRandom Search", ("shared", "rand/1/bin"): "Shared \u03b3 (3-D)\nDE",
+              ("ard", "RandomSearch"): "ARD (10-D)\nRandom Search", ("ard", "rand/1/bin"): "ARD (10-D)\nDE"}
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4))
+    for ax, key, title in zip(axes, ("validation_rmse", "holdout_rmse"), ("Validation RMSE (selection metric)", "Holdout RMSE (scored once)")):
+        for i, a in enumerate(ard):
+            ax.bar(i, a[key]["mean"], yerr=a[key]["std"], capsize=4, color=GRAY if a["method"] == "RandomSearch" else BLUE)
+            ax.text(i, a[key]["mean"] + a[key]["std"] + 0.03, f"{a[key]['mean']:.3f}", ha="center", fontsize=9)
+        ax.set_xticks(range(len(ard)), [labels[a["space"], a["method"]] for a in ard], fontsize=9)
+        ax.set(ylim=(4.0, 5.9), ylabel="RMSE (MPa)", title=title)
+    fig.suptitle("1,500 calls per run, mean \u00b1 SD over five seeds (grey: Random Search, blue: DE)", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(OUT / "ard_comparison.png", dpi=180)
+    plt.close(fig)
+
+    rep = json.loads(Path("results/extension2/replication_results.json").read_text())
+    rows = [(str(s["split"]), s["d_validation"], s["d_holdout"]) for s in rep["per_split"]]
+    rows.append(("42 (original)", rep["original_split"]["d_validation"], rep["original_split"]["d_holdout"]))
+    x = np.arange(len(rows))
+    fig, ax = plt.subplots(figsize=(10, 4.4))
+    ax.bar(x - 0.2, [r[1] for r in rows], 0.4, color=GRAY, label="Validation (selection metric)")
+    ax.bar(x + 0.2, [r[2] for r in rows], 0.4, color=BLUE, label="Holdout")
+    ax.axhline(0, color="k", lw=1)
+    ax.set_xticks(x, [r[0] for r in rows])
+    ax.set(xlabel="Outer split (random_state)", ylabel="Random Search \u2212 DE RMSE (MPa)",
+           title="Positive favours DE; five-seed means per split (splits overlap)")
+    ax.legend(frameon=False)
+    fig.tight_layout()
+    fig.savefig(OUT / "replication_gap.png", dpi=180)
+    plt.close(fig)
+
+
 def extension_table() -> None:
     """Write report/tables/extension.tex from the saved extension and frozen results."""
     final = json.loads(Path("results/final/final_results.json").read_text())["comparison"]
@@ -180,4 +215,4 @@ def extension_table() -> None:
 
 
 if __name__ == "__main__":
-    {"evidence": evidence_figures, "extension": extension_figures, "tables": extension_table}[sys.argv[1]]()
+    {"evidence": evidence_figures, "extension": extension_figures, "extension2": extension2_figures, "tables": extension_table}[sys.argv[1]]()

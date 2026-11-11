@@ -4,8 +4,8 @@ Date: 1 November 2026. Local document preparation is complete; signatures, profe
 
 ## Deliverables
 
-- `report/concrete-strength-de-svr-report.pdf`: 43 pages (extension added 5 Nov 2026); editable source in `report/main.tex`, `metadata.tex`, `chapters/`, `frontmatter/`, `tables/`, `assets/` and `latex/`.
-- `presentation/concrete-strength-de-svr-presentation.pptx`: 24 editable slides (offline PDF preview not regenerated; see work log); its PDF provides an offline preview. Rebuild source: `presentation/scripts/build_presentation.py`.
+- `report/concrete-strength-de-svr-report.pdf`: 45 pages (Extensions 1 and 2 added 5-11 Nov 2026); editable source in `report/main.tex`, `metadata.tex`, `chapters/`, `frontmatter/`, `tables/`, `assets/` and `latex/`.
+- `presentation/concrete-strength-de-svr-presentation.pptx`: 28 editable slides (11 Nov 2026 rebuild: Extension 2, agenda with slide ranges, section footers, speaker notes); the PDF preview was rendered through Keynote, not PowerPoint. Rebuild source: `presentation/scripts/build_presentation.py`.
 - Central library: `/Users/rva/Projects/BMSCE_Academic_Templates/`. The previous `BMSCE_Thesis_Guidelines_CSE_DS` folder is preserved completely at `archive/original-supplied-folder/` inside this renamed library.
 
 The central library contains separate course-report and six-chapter thesis starters, one shared formatting package, references, and a reusable PowerPoint. It is a filesystem template library, not an installed Codex skill.
