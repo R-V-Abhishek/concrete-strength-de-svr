@@ -199,7 +199,7 @@ def extension_table() -> None:
 
     d_raw, d_log = final["default_svr"], ext["default_svr"]["log_age"]
     lines = [
-        r"\begin{table}[htbp]\centering\caption[Extension results]{Raw features (frozen) versus ln(age) features. Tuned values are five-seed mean $\pm$ sample SD on the same 204 holdout rows; default rows show the single five-fold CV mean and the single holdout score.}\label{tab:extension}\footnotesize\setlength{\tabcolsep}{4pt}\begin{tabularx}{\textwidth}{lCCCC}\toprule Model&Validation RMSE&Holdout RMSE&Holdout MAE&Holdout $R^2$\\\midrule",
+        r"\begin{table}[htbp]\centering\caption[Extension results]{Raw features (frozen) versus ln(age) features. Tuned values are five-seed mean $\pm$ sample SD on the same 204 holdout rows; default rows show the single five-fold CV mean and the single holdout score.}\label{tab:extension}\footnotesize\setlength{\tabcolsep}{2pt}\begin{tabularx}{\textwidth}{lCCCC}\toprule Model&Validation RMSE&Holdout RMSE&Holdout MAE&Holdout $R^2$\\\midrule",
         r"\multicolumn{5}{l}{\textit{Raw features (frozen results)}}\\",
         f"Default SVR & {d_raw['cv']['mean_rmse']:.4f} & {d_raw['holdout']['rmse']:.4f} & {d_raw['holdout']['mae']:.4f} & {d_raw['holdout']['r2']:.4f}\\\\",
         row("Random Search", frozen("random_search")), row("DE rand/1/bin", frozen("de")),

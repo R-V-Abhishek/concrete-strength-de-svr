@@ -2,7 +2,7 @@
 \section{Concrete Strength Prediction Techniques}
 Yeh's 1998 work studied strength modeling for high-performance concrete using artificial neural networks \cite{yeh}. It provides the domain background for the dataset used here. The dataset is valuable for testing nonlinear regression because inputs include both mixture composition and curing age. Published results from another paper cannot be transferred directly to this study without reproducing its partition and evaluation procedure.
 \section{Machine Learning for Concrete Strength Prediction}
-A supervised model learns an association between measured inputs and target strength. Neural networks and kernel methods offer different representations of nonlinear relationships. This project deliberately evaluates one RBF-SVR model rather than expanding the comparison to many learners. A small scope allows stronger control of preprocessing, data isolation and optimizer budgets.
+A supervised model learns the association between measured inputs and target strength. Neural networks and kernel methods offer different representations of nonlinear relationships. This project deliberately evaluates one RBF-SVR model rather than expanding the comparison to many learners. A small scope allows stronger control of preprocessing, data isolation and optimizer budgets.
 
 The dataset is cross-sectional tabular data. Age is a feature describing curing duration; it does not make the rows an ordered financial time series. Temporal forecasting procedures are therefore not appropriate for the fixed tabular evaluation used here.
 \section{Hyperparameter Optimization Methods}
