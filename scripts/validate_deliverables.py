@@ -18,13 +18,14 @@ bordered=[]
 for page in r.pages:
  ops=ContentStream(page.get_contents(),r).operations
  widths=[float(a[0]) for a,b in ops if b==b'w']
- navy=[tuple(round(float(v),2) for v in a) for a,b in ops if b==b'RG']
+ stroke=[tuple(round(float(v),2) for v in a) for a,b in ops if b in (b'RG',b'G')]
+ curves=sum(1 for a,b in ops if b==b'c')
  moves=[tuple(round(float(v),1) for v in a) for a,b in ops if b==b'm']
- bordered.append(any(abs(x-1.59403)<.01 for x in widths) and any(abs(x-.49813)<.01 for x in widths) and (0,.2,.4) in navy and (34.0,34.0) in moves and (38.3,38.3) in moves)
+ bordered.append(any(abs(x-1.59403)<.01 for x in widths) and any(abs(x-.49813)<.01 for x in widths) and (0.0,) in stroke and curves>=8 and (34.0,34.0) in moves and (38.3,38.3) in moves)
 front=[i for i,l in enumerate(r.page_labels) if l[0].lower() in 'ivx']
 checks['border_on_every_front_matter_page']=all(bordered[i] for i in front) and not any(bordered[i] for i in range(len(bordered)) if i not in front)
 checks['bordered_page_count']=sum(bordered)
-checks['border_style']='Front matter only: double navy border (0,51,102), 1.6pt outer / 0.5pt inner; 1.2 / 1.35 cm insets; square corners'
+checks['border_style']='Front matter only: double black border, 1.6pt outer / 0.5pt inner; 1.2 / 1.35 cm insets; rounded corners (10pt / 6pt)'
 text='\n'.join(x.extract_text() for x in r.pages)
 compact=lambda s: re.sub('[^a-z0-9]','',s.lower())
 normalized=compact(text)
