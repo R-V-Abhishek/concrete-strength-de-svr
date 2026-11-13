@@ -1,0 +1,14 @@
+\begin{table}[htbp]\centering\caption[Extension results]{Raw features (frozen) versus ln(age) features. Tuned values are five-seed mean $\pm$ sample SD on the same 204 holdout rows; default rows show the single five-fold CV mean and the single holdout score.}\label{tab:extension}\footnotesize\setlength{\tabcolsep}{2pt}\begin{tabularx}{\textwidth}{lCCCC}\toprule Model&Validation RMSE&Holdout RMSE&Holdout MAE&Holdout $R^2$\\\midrule
+\multicolumn{5}{l}{\textit{Raw features (frozen results)}}\\
+Default SVR & 10.3140 & 9.9069 & 7.8854 & 0.5755\\
+Random Search & \mbox{$5.9399\pm0.0287$} & \mbox{$6.2328\pm0.1194$} & \mbox{$4.3502\pm0.0253$} & \mbox{$0.8319\pm0.0064$}\\
+DE rand/1/bin & \mbox{$5.8797\pm0.0198$} & \mbox{$6.2250\pm0.1104$} & \mbox{$4.3143\pm0.0526$} & \mbox{$0.8324\pm0.0060$}\\
+\midrule\multicolumn{5}{l}{\textit{ln(age) features (extension)}}\\
+Default SVR & 8.4000 & 7.4780 & 5.6198 & 0.7581\\
+Random Search & \mbox{$5.0171\pm0.0687$} & \mbox{$4.9700\pm0.2656$} & \mbox{$3.3607\pm0.0773$} & \mbox{$0.8929\pm0.0116$}\\
+DE rand/1/bin & \mbox{$4.9670\pm0.0284$} & \mbox{$4.8402\pm0.1039$} & \mbox{$3.2623\pm0.0576$} & \mbox{$0.8987\pm0.0044$}\\
+\midrule\multicolumn{5}{l}{\textit{DE ablations on ln(age) (same 300-call budget)}}\\
+DE current-to-best/1/bin & \mbox{$4.9028\pm0.0701$} & \mbox{$4.8363\pm0.0582$} & \mbox{$3.3322\pm0.0724$} & \mbox{$0.8988\pm0.0024$}\\
+jDE & \mbox{$4.8976\pm0.0234$} & \mbox{$4.8890\pm0.0820$} & \mbox{$3.3221\pm0.0633$} & \mbox{$0.8966\pm0.0035$}\\
+DE rand/1/bin + water ratios & \mbox{$4.9611\pm0.0120$} & \mbox{$4.7849\pm0.0630$} & \mbox{$3.2696\pm0.0628$} & \mbox{$0.9010\pm0.0026$}\\
+\bottomrule\end{tabularx}\end{table}

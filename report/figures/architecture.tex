@@ -1,0 +1,44 @@
+% Pipeline architecture: data -> preprocessing -> search -> final evaluation.
+% Requires tikz libraries: positioning, arrows.meta, fit, backgrounds, calc.
+\begin{tikzpicture}[
+  font=\footnotesize, >={Stealth[length=2mm]}, node distance=0.65cm and 0.7cm,
+  box/.style={draw, rounded corners=2pt, align=center, text width=4.5cm, minimum height=1.6cm, inner sep=3pt, line width=0.5pt},
+  data/.style={box, fill=blue!10, draw=blue!60!black},
+  prep/.style={box, fill=teal!12, draw=teal!60!black},
+  opt/.style={box, fill=orange!15, draw=orange!70!black},
+  evalu/.style={box, fill=green!12, draw=green!50!black},
+  stage/.style={font=\footnotesize\bfseries, anchor=south, inner sep=2pt},
+  flow/.style={->, line width=0.6pt}]
+\hyphenpenalty=10000 \exhyphenpenalty=10000
+% Row 1: data
+\node[data] (d1) {UCI Concrete Strength dataset\\1{,}030 rows, 8 inputs + target\\raw XLS kept, SHA-256 checked};
+\node[data, right=of d1] (d2) {Audit, canonical columns\\no missing values\\all rows kept};
+\node[data, right=of d2] (d3) {Group identical input tuples\\996 groups\\(34 repeated rows)};
+% Row 2: splits and features
+\node[prep, below=1.3cm of d1] (p1) {Group holdout split (seed 42)\\development: 826 rows\\holdout: 204 rows};
+\node[prep, right=of p1] (p2) {5 group-disjoint CV folds\\development data only\\saved split manifest};
+\node[prep, right=of p2] (p3) {Feature representation\\raw or $\ln(\text{age})$\\(+ water ratios, ablation)};
+% Row 3: optimisation
+\node[opt, below=1.3cm of p1] (o1) {Tune $\log_{10}(C,\gamma,\varepsilon)$\\Default, Random, DE variants\\300 calls $\times$ 5 seeds each};
+\node[opt, right=of o1] (o2) {Fitness evaluator\\fold-local scaler + RBF-SVR\\mean 5-fold CV RMSE (MPa)};
+\node[opt, right=of o2] (o3) {Freeze best-CV candidate\\one per method and seed\\holdout never consulted};
+% Row 4: final evaluation
+\node[evalu, below=1.3cm of o1] (e1) {Refit once on\\826 development rows};
+\node[evalu, right=of e1] (e2) {Score fixed 204-row holdout\\RMSE, MAE, $R^2$\\mean $\pm$ SD over 5 seeds};
+\node[evalu, right=of e2] (e3) {Evidence and audit\\JSON/CSV, plots, checksums\\verifier and unit tests};
+% Flow arrows
+\draw[flow] (d1) -- (d2); \draw[flow] (d2) -- (d3);
+\draw[flow] (d3.south) -- ++(0,-0.65) -| (p1.north);
+\draw[flow] (p1) -- (p2); \draw[flow] (p2) -- (p3);
+\draw[flow] (p3.south) -- ++(0,-0.65) -| (o1.north);
+\draw[flow] ([yshift=0.2cm]o1.east) -- ([yshift=0.2cm]o2.west);
+\draw[flow] ([yshift=-0.2cm]o2.west) -- ([yshift=-0.2cm]o1.east);
+\draw[flow] (o2) -- (o3);
+\draw[flow] (o3.south) -- ++(0,-0.65) -| (e1.north);
+\draw[flow] (e1) -- (e2); \draw[flow] (e2) -- (e3);
+% Stage labels, centred above the middle column (clear of connectors)
+\node[stage] at (d2.north) {1. Data};
+\node[stage] at (p2.north) {2. Splits and features};
+\node[stage] at (o2.north) {3. Optimisation (dev. data only)};
+\node[stage] at (e2.north) {4. Final evaluation (holdout used once)};
+\end{tikzpicture}

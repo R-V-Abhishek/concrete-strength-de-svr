@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper]{report}
 \usepackage{bmsce}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc,shapes.geometric}
 \input{metadata}
 \addbibresource{references.bib}
 \begin{document}
@@ -24,6 +25,6 @@
 \input{chapters/10-conclusion}
 \input{chapters/11-future-work}
 \printbibliography[heading=bibintoc,title={References}]
-\chapter*{GitHub Repo Link}\addcontentsline{toc}{chapter}{GitHub Repo Link}
+\phantomsection\chapter*{GitHub Repo Link}\addcontentsline{toc}{chapter}{GitHub Repo Link}
 \noindent\url{\RepositoryURL}
 \end{document}

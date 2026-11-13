@@ -18,13 +18,13 @@ bordered=[]
 for page in r.pages:
  ops=ContentStream(page.get_contents(),r).operations
  widths=[float(a[0]) for a,b in ops if b==b'w']
- moves=[tuple(float(v) for v in a) for a,b in ops if b==b'm']
- greys=[float(a[0]) for a,b in ops if b==b'G']
- curves=sum(b==b'c' for a,b in ops)
- bordered.append(any(abs(x-2.39103)<.01 for x in widths) and any(abs(x-36)<.01 and abs(y-805.9)<.1 for x,y in moves) and any(abs(x-.45)<.001 for x in greys) and curves>=8 and any(abs(x-1.19552)<.01 for x in widths))
-checks['border_on_every_page']=all(bordered)
+ navy=[tuple(round(float(v),2) for v in a) for a,b in ops if b==b'RG']
+ moves=[tuple(round(float(v),1) for v in a) for a,b in ops if b==b'm']
+ bordered.append(any(abs(x-1.59403)<.01 for x in widths) and any(abs(x-.49813)<.01 for x in widths) and (0,.2,.4) in navy and (34.0,34.0) in moves and (38.3,38.3) in moves)
+front=[i for i,l in enumerate(r.page_labels) if l[0].lower() in 'ivx']
+checks['border_on_every_front_matter_page']=all(bordered[i] for i in front) and not any(bordered[i] for i in range(len(bordered)) if i not in front)
 checks['bordered_page_count']=sum(bordered)
-checks['border_style']='Double border: black!55 grey; 2.4pt outer / 1.2pt inner; 0.5 / 0.55-inch insets; 6pt / 3pt rounded corners'
+checks['border_style']='Front matter only: double navy border (0,51,102), 1.6pt outer / 0.5pt inner; 1.2 / 1.35 cm insets; square corners'
 text='\n'.join(x.extract_text() for x in r.pages)
 compact=lambda s: re.sub('[^a-z0-9]','',s.lower())
 normalized=compact(text)
@@ -52,13 +52,18 @@ with zipfile.ZipFile(source) as z1,zipfile.ZipFile(deck) as z2:
  parts=[n for n in z1.namelist() if n.startswith('ppt/theme/') and n.endswith('.xml')]
  checks['original_theme_parts_byte_preserved']=all(z1.read(n)==z2.read(n) for n in parts)
 checks['native_result_table_count']=sum(x.has_table for s in p.slides for x in s.shapes)
-table=next(x.table for x in p.slides[9].shapes if x.has_table)
+tables=[x.table for s in p.slides for x in s.shapes if x.has_table]
+table=tables[0]
 d=json.loads((root/'results/final/final_results.json').read_text())
 expected=[]
 for key in ['default_svr','random_search','de']:
  h=d['comparison'][key]['holdout']
  expected.append([f'{h[k]:.4f}' if key=='default_svr' else f"{h[k]['mean']:.4f} ± {h[k]['std']:.4f}" for k in ['rmse','mae','r2']])
 checks['ppt_table_matches_frozen_json']=all(table.cell(i+1,j+1).text==expected[i][j] for i in range(3) for j in range(3))
+ext=json.loads((root/'results/extension/extension_results.json').read_text())
+ea={(a['feature_set'],a['method']):a for a in ext['aggregates']}
+et=tables[1]
+checks['ppt_extension_table_matches_extension_json']=(et.cell(1,2).text==f"{ext['default_svr']['log_age']['holdout_metrics']['rmse']:.4f}" and et.cell(2,2).text==f"{ea['log_age','RandomSearch']['holdout_rmse']['mean']:.4f} ± {ea['log_age','RandomSearch']['holdout_rmse']['std']:.4f}" and et.cell(3,2).text==f"{ea['log_age','rand/1/bin']['holdout_rmse']['mean']:.4f} ± {ea['log_age','rand/1/bin']['holdout_rmse']['std']:.4f}")
 receipt=json.loads((root/'docs/validation/presentation-finalization.json').read_text())
 sha=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
 checks['ppt_matches_finalization_receipt']=sha(deck)==receipt['finalSha256']

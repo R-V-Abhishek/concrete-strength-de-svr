@@ -6,4 +6,4 @@ From the repository root, build with `sh report/scripts/build.sh`. XeLaTeX, late
 
 Uses BMSCE typography and margins with the stock-price example's section order, adapted to concrete prediction. Preserves headings for unperformed analyses and explicitly states their limits. Adds the required Comparative Performance Analysis, Applications and Case Studies, References and GitHub Repo Link sections absent or incomplete in the sample. Certificate signature fields remain blank for actual endorsement.
 
-To use Overleaf, upload this directory’s contents, select XeLaTeX and use `main.tex` as the main document. Times New Roman must be available in the build environment.
+To use Overleaf, upload this directory’s contents, select XeLaTeX and use `main.tex` as the main document. The body font is Latin Modern (Computer Modern), bundled with TeX Live and Overleaf.

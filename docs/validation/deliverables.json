@@ -1,8 +1,8 @@
 {
-  "report_page_count": 35,
+  "report_page_count": 43,
   "a4_every_page": true,
   "border_on_every_page": true,
-  "bordered_page_count": 35,
+  "bordered_page_count": 43,
   "border_style": "Double border: black!55 grey; 2.4pt outer / 1.2pt inner; 0.5 / 0.55-inch insets; 6pt / 3pt rounded corners",
   "required_report_headings": true,
   "identities_report_and_cover": true,
@@ -13,17 +13,20 @@
   "no_stale_reference_identities": true,
   "report_contains_all_ten_run_metrics": true,
   "report_clean_tex_log": true,
-  "slide_count": 18,
+  "slide_count": 24,
   "original_slide_dimensions": true,
   "original_theme_parts_byte_preserved": true,
-  "native_result_table_count": 1,
+  "native_result_table_count": 2,
   "ppt_table_matches_frozen_json": true,
-  "ppt_matches_finalization_receipt": true,
+  "ppt_extension_table_matches_extension_json": true,
+  "ppt_matches_finalization_receipt": false,
   "ppt_finalizer_no_findings_or_warnings": true,
-  "report_sha256": "c56362830174cf7eac5d2cd41646b29a24665f11ecbe85fcc9ffe87f20683643",
-  "pptx_sha256": "cd8cf953af86064665813935f0f193486a3d567b0e5682b9e3bcf61a9fd86142",
+  "report_sha256": "11c24b267d60d5b0a86635096506e92de9814b89fa32dce993437b5073641b98",
+  "pptx_sha256": "77f4a6504b415f2b62ac0c5669bcca2b17dda0f60560a74e8b7416440d0bd073",
   "validation_scope": "Automated artifact checks; visual review is recorded separately in docs/deliverable-validation.md.",
   "artifact_import_limitation": "Bundled Artifact Tool import lacked @oai/granola/node; used targeted python-pptx edits and first-party package/layout/font finalization. Import check skipped explicitly.",
-  "status": "pass",
-  "failed_checks": []
+  "status": "fail",
+  "failed_checks": [
+    "ppt_matches_finalization_receipt"
+  ]
 }

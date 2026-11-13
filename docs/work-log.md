@@ -351,3 +351,62 @@ Content corrections: "Paper Organization" is now "Report Organization"; the cros
 Built with XeLaTeX, Biber and latexmk (TinyTeX; installed the missing `algorithms`/`algorithmicx` packages); the log has no warnings, undefined references or overfull/underfull boxes. Report remains 35 pages. Rendered and inspected every page. `scripts/validate_deliverables.py` passes; `docs/validation/deliverables.json` now carries the new report hash. No experiments were rerun. Signatures, uploads and presentation evidence remain pending.
 
 Follow-up: certificate HOD signature block flushed right, spacing added under "Examiners", and the Acknowledgement and Abstract headings centred (`\CenteredStarChapter`); rebuilt with a clean log, 35 pages, validator passes, report hash in `docs/validation/deliverables.json` updated.
+
+
+### Log-age extension, diagrams and extra charts — 5 November 2026
+
+Branch `codex/log-age-extension`. Goal: find improvements beyond the frozen Random Search/DE results, add an architecture diagram and more charts.
+
+**Finding.** A development-only probe (scipy DE, seed 11, five saved folds, nothing saved, no holdout access) gave CV RMSE 5.85 (raw) vs 4.97 (ln(age)) vs 4.96 (+ratios) vs 4.99 (+log target). The optimizer was not the bottleneck; the age representation was. Disclosed in the report: ln(age) is probe-motivated and the holdout was inspected in Stage 1.
+
+**Protocol.** `docs/protocol-extension.md` was committed before any extension run (commit 0e31cfb). Same splits/folds/bounds/budget/seeds; frozen raw results reused, not rerun; default SVR, Random Search and DE all on ln(age); ablations: DE current-to-best/1/bin, jDE, water ratios.
+
+**Code.** `data.py` (`FEATURE_SETS`, `add_engineered_features`), optional `feature_columns` through `evaluation.py`/`search.py`, DE `strategy` option in `de.py` (default rand/1/bin unchanged and checked against the saved seed-11 history), `extension.py` with CLI `extension-search` and `extension-finalize`. Tests: 52 pass (`tests/test_extension.py` is new).
+
+**Commands.** `uv run concrete-strength extension-search` (25 runs, ~1 h, clean tree at launch, 300 calls each); `uv run concrete-strength extension-finalize` (one holdout pass); `shasum` manifest in `results/extension/SHA256SUMS`.
+
+**Results (holdout RMSE, MPa, mean ± SD over 5 seeds).** Default SVR 9.9069 raw / 7.4780 ln(age); Random Search 6.2328 / 4.9700 ± 0.2656; DE 6.2250 / 4.8402 ± 0.1039 (22.2% below frozen DE); current-to-best/1/bin 4.8363 ± 0.0582; jDE 4.8890 ± 0.0820; DE + ratios 4.7849 ± 0.0630. Validation RMSE: RS 5.0171, DE 4.9670, current-to-best 4.9028, jDE 4.8976, ratios 4.9611. Demonstration (lowest validation): current-to-best seed 55, validation 4.8606, holdout 4.8672. DE is 0.13 MPa below Random Search and less variable, untested for significance; variants and ratios are within seed SD.
+
+**Deliverables.** TikZ architecture and DE flowchart (`report/figures/`, PNGs via `report/scripts/render_figures.sh` + `crop_png.py`); charts via `scripts/make_report_figures.py` (EDA, correlation, search-space, representation comparison, DE variants, extension predictions) and generated `report/tables/extension.tex`. Report: new Section 7.12 plus updates to Ch5, Ch6, Ch8, abstract, conclusion, future work, jDE reference; 43 pages, clean log. PPT: 24 slides (architecture, flowchart, search-space, extension table/chart/variants added).
+
+**Verification.** `pytest` 52 passed; `verify-stage1`, `verify-evidence` (alternate output path), `results/final/SHA256SUMS` and extension checksums pass; `git diff` of `results/final`, `results/de`, `results/baseline`, `configs/experiment.json`, `uv.lock` is empty. Report rendered and extension/architecture/flowchart pages inspected. TeX packages came from a scratch user tree and Biber 2.22 from Homebrew; no project dependency or lockfile changed.
+
+**Not done / limits.** No renderer for slides (`soffice` absent): new slides were checked programmatically (shapes in bounds, table values match JSON), not visually; `presentation/*.pdf` preview is stale. `docs/validation/presentation-finalization.json` is the old first-party finalization receipt, so `validate_deliverables.py` reports `ppt_matches_finalization_receipt: false` (every other check passes). Registration, signatures, upload and presentation remain unverified.
+
+## Extension 2 (6 November 2026): ARD kernel search space and split replication
+
+**Why.** After Extension 1 the DE-vs-Random-Search gap (0.13 MPa) was smaller than seed spread. A development-only, unsaved probe of a per-feature-gamma (ARD) kernel (CV only, no holdout, no Random Search arm) suggested a lower CV RMSE and motivated testing whether DE gains more in a 10-D space. Disclosed in the report; the holdout was already seen in Stage 1 and Extension 1.
+
+**Protocol.** `docs/protocol-extension2.md` + `configs/extension2.json` committed before any run (commit c37b0db). E2a: ARD (10-D) vs shared gamma (3-D control), Random Search vs DE/rand/1/bin, 1,500 calls, population 5 x dimension, 5 seeds. E2b: `log_age`, Random Search vs DE, 300 calls, 5 seeds, five new group-disjoint outer splits (`random_state` 101-105).
+
+**Code.** `evaluation.py` (`build_ard_pipeline`, `evaluate_ard_cv`: columns scaled by sqrt(gamma_j), SVR gamma = 1; equal gammas reproduce the standard RBF-SVR, tested), `extension2.py` (process-parallel runs, 7 workers) and CLI `ext2-ard-search`, `ext2-ard-finalize`, `ext2-replication-search`, `ext2-replication-finalize`. Searches ran with `OMP_NUM_THREADS=1`; runtimes under parallel load are indicative only. Tests: 57 pass.
+
+**Results (mean ± SD over 5 seeds; validation / holdout RMSE, MPa).** 1,500 calls: shared-gamma Random Search 4.9185 / 4.8381 ± 0.1064; shared-gamma DE 4.8581 ± 0.0000 / 4.8699 ± 0.0060; ARD Random Search 5.1116 / 4.9693 ± 0.3940; ARD DE 4.8811 / 4.6787 ± 0.4899. Random Search degrades in 10-D, DE does not (validation advantage 0.06 -> 0.23 MPa), but ARD did not improve validation RMSE over the shared kernel, and the probe's lower CV value was not reproduced. Replication (d = RS - DE; positive favours DE): validation d > 0 on all six splits (mean 0.071, approx. 95% t-interval 0.045-0.097); holdout d > 0 on five of six (mean 0.118, interval 0.012-0.224; new five alone 0.116, interval -0.024 to 0.256). Splits overlap, so intervals are indicative only.
+
+**Deliverables.** Report Section 7.13 (44 pages, clean log). Slides were not updated for Extension 2. Evidence in `results/extension2/` with its own `SHA256SUMS`; tag `extension2-2026-11-06` (local).
+
+**Verification.** `pytest` 57 passed; `verify-stage1` passes; checksums pass; `git diff` of the frozen evidence, `results/extension`, `configs/experiment.json`, `uv.lock` and `data` is empty.
+
+## Deliverable data sync after Extension 2 (11 November 2026)
+
+**Goal.** Bring the report and presentation in line with all saved evidence (frozen study, Extension 1, Extension 2) and improve the deck's indexing. Branch `codex/log-age-extension`. No training or search was rerun.
+
+**Report.** Extension 2 existed only in Section 7.13. Added it to the abstract (new paragraph), Chapter 1 contributions, Chapter 5 (ARD kernel), Chapter 6 (3-D vs 10-D and replication), the Chapter 7 scope sentence, Chapter 8 comparison, the conclusion and future work (replication now done; non-overlapping/nested splits remain future). Numbers were checked against `results/extension2/ard_results.json` and `replication_results.json`. Rebuilt with XeLaTeX/latexmk/Biber 2.22: 45 pages, no warnings, undefined references or over/underfull boxes. `biblatex`, `biblatex-ieee` and `logreq` were installed with `tlmgr --usermode` into `~/Library/texmf` because the earlier temporary TeX tree was gone; the system TeX install was not changed.
+
+**Presentation.** 24 to 28 slides (`presentation/scripts/build_presentation.py`). Added: Objectives and Scope (RQ1-RQ4), Extension 2a (ARD), Extension 2b (replication), Key Findings. Table of Contents now lists five sections with slide ranges computed from the deck order; every content slide has a "Section k: name" footer tag and `n / N` numbering; every slide has specific speaker notes with its evidence source. Stale text fixed: "Forty-three tests" to 57 passing tests; limitations, future scope and closing statement updated for Extension 2. New charts `report/assets/ard_comparison.png` and `replication_gap.png` come from `scripts/make_report_figures.py extension2`. The preview PDF was regenerated by exporting the PPTX through Keynote and every slide was inspected as a contact sheet; the agenda, Key Findings and closing slides were inspected at full size.
+
+**Verification.** `uv run pytest -q`: 57 passed. Checksums in `results/final`, `results/extension` and `results/extension2` all pass. `scripts/validate_deliverables.py`: every check passes except `ppt_matches_finalization_receipt`; the first-party PPTX finalizer was not available, so `docs/validation/presentation-finalization.json` still describes the older deck and `deliverables.json` was not rewritten. No em dashes in either deliverable. PowerPoint itself was not used.
+
+**Open.** Visual changes to report and deck are awaiting the user's instructions. Signatures, registration, Drive upload, professor access and presentation remain unverified.
+
+### Slide layout pass — 11 November 2026
+
+At the user's request: slides 3-8, 10, 11, 13, 18 and 23-26 now share one pattern (`panel()` in `presentation/scripts/build_presentation.py`): a heading, real bullets with bold lead-ins on the left, and "key data" cards on the right (tables on slides 13 and 18 keep their native tables with bulleted conclusions below). Slide 12 uses a new widescreen TikZ flowchart (`report/figures/de-flowchart-wide.tex`, rendered by `report/scripts/render_figures.sh`; the report keeps the vertical flowchart). The reference slide has clickable DOI/source links and the closing slide was rebuilt (takeaway cards, questions, team, clickable repository link); previously it was the template's closing layout with text appended. Preview PDF re-rendered via Keynote and every changed slide inspected. All card numbers are computed from saved results or are fixed protocol values; the 57-test and three-checksum-set figures are from this session's runs.
+
+### Report redesign after the reference report — 11 November 2026
+
+Applied the user's three requests (footer clearance from the inner border; hyperlinked contents; hyperlinked lists of figures and tables) and adopted the design of the RecycleGuard report. Details and the two deliberate exceptions (Times New Roman kept; border kept on body pages) are in `docs/deliverable-validation.md`. Changes live in `report/latex/bmsce.sty` plus `\phantomsection` anchors for the abbreviations and repository headings. Content is unchanged; the report grew from 45 to 49 pages because the margins are tighter. Contents, list of figures and list of tables carry internal links (checked with pypdf: 56/72/48, 36 and 20 link annotations). Validator updated for the navy border; the only failing check is still the old PPT finalization receipt.
+
+### Reference fidelity follow-up — 11 November 2026
+
+At the user's request (both questions answered yes): body font switched from Times New Roman to Latin Modern (Computer Modern) and the page border restricted to the front matter. Computer Modern is wider, so two layout warnings appeared and were fixed without changing results: the generated extension table's column padding was reduced (`scripts/make_report_figures.py`, `tables` mode regenerated from saved JSON, no training) and two sentences were lightly reworded (Chapter 2, Section 7.12.3). Final build: 49 pages, no warnings, overfull or underfull boxes. `scripts/validate_deliverables.py` checks the border on front-matter pages only; its sole failing check is the old PPT finalization receipt. Slides still use Times New Roman (the slide template's font); say if the deck should follow suit.

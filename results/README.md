@@ -60,3 +60,19 @@ and plot rendering; original model selections, holdout metrics and predictions a
 preserved. Convergence now includes both methods' five histories. Historical
 Windows provenance is retained, including its package versions and CRLF checksums;
 the verifier explicitly recognizes Windows path separators and text line endings.
+
+## Extension results (`extension/`)
+
+Separate from the frozen evidence above; protocol in [`docs/protocol-extension.md`](../docs/protocol-extension.md). `extension_search.json` holds 25 validation-only 300-call runs (5 seeds each of Random Search, DE/rand/1/bin, DE current-to-best/1/bin and jDE on `ln(age)` inputs, and DE/rand/1/bin on `ln(age)` + water ratios). `extension_results.json` and `metrics.csv` are the single holdout evaluation of those frozen selections plus default SVR on both feature sets. `SHA256SUMS` covers the three files (`cd results/extension && shasum -a 256 -c SHA256SUMS`).
+
+| Model (holdout RMSE, MPa) | Raw (frozen) | ln(age) |
+|---|---:|---:|
+| Default SVR | 9.9069 | 7.4780 |
+| Random Search | 6.2328 ± 0.1194 | 4.9700 ± 0.2656 |
+| DE/rand/1/bin | 6.2250 ± 0.1104 | 4.8402 ± 0.1039 |
+
+DE current-to-best/1/bin 4.8363 ± 0.0582; jDE 4.8890 ± 0.0820; DE + water ratios 4.7849 ± 0.0630. `ln(age)` was chosen after a development-only probe, and the holdout was already inspected in Stage 1. DE vs Random Search (0.13 MPa) is untested for significance; the variants and ratios are not distinguishable from DE/rand/1/bin given the seed SD.
+
+## Extension 2 results (`extension2/`)
+
+Protocol in [`docs/protocol-extension2.md`](../docs/protocol-extension2.md). `ard_search.json` / `ard_results.json` / `ard_metrics.csv`: 20 runs of 1,500 calls (shared-gamma and ARD kernels x Random Search / DE). `replication_splits.json` holds five new group-disjoint outer splits; `replication_search.json` / `replication_results.json` / `replication_metrics.csv`: 50 runs of 300 calls and the per-split Random Search minus DE summary. Search files are validation-only; finalize files are the single holdout evaluation. `SHA256SUMS` covers all seven files (`cd results/extension2 && shasum -a 256 -c SHA256SUMS`).

@@ -8,10 +8,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from concrete_strength.data import FEATURE_COLUMNS
 from concrete_strength.evaluation import evaluate_hyperparameters
 from concrete_strength.search import DEFAULT_BOUNDS
 
 PARAMETER_NAMES = ("log_C", "log_gamma", "log_epsilon")
+STRATEGIES = ("rand/1/bin", "current-to-best/1/bin", "jDE")
 
 
 @dataclass
@@ -52,6 +54,14 @@ def crossover(target: np.ndarray, mutant: np.ndarray, rate: float, rng: np.rando
     return np.where(mask, mutant, target)
 
 
+def mutate_current_to_best(population: np.ndarray, target: int, best: int, donors: np.ndarray,
+                           weight: float, bounds: np.ndarray) -> np.ndarray:
+    """v = x_i + F (x_best - x_i) + F (x_r1 - x_r2), clipped; best from the frozen generation."""
+    r1, r2 = population[donors[:2]]
+    return np.clip(population[target] + weight * (population[best] - population[target])
+                   + weight * (r1 - r2), bounds[:, 0], bounds[:, 1])
+
+
 def minimize_de(
     objective: Callable[[np.ndarray], float],
     bounds: list[tuple[float, float]],
@@ -60,6 +70,7 @@ def minimize_de(
     population_size: int = 15,
     mutation_weight: float = 0.8,
     crossover_rate: float = 0.9,
+    strategy: str = "rand/1/bin",
 ) -> DEResult:
     """Minimize a scalar objective using deferred, complete-generation DE.
 
@@ -79,6 +90,8 @@ def minimize_de(
         raise ValueError("mutation_weight must be in (0, 2]")
     if not np.isfinite(crossover_rate) or not 0 <= crossover_rate <= 1:
         raise ValueError("crossover_rate must be in [0, 1]")
+    if strategy not in STRATEGIES:
+        raise ValueError(f"strategy must be one of {STRATEGIES}")
 
     rng = np.random.default_rng(seed)
     population = rng.uniform(limits[:, 0], limits[:, 1], size=(population_size, len(limits)))
@@ -106,19 +119,35 @@ def minimize_de(
         return value
 
     fitness = np.array([evaluate(point, 0, i) for i, point in enumerate(population)])
+    # jDE keeps one (F, CR) pair per individual; other strategies use the fixed controls.
+    weights = np.full(population_size, mutation_weight)
+    rates = np.full(population_size, crossover_rate)
     for generation in range(1, budget // population_size):
         # All donors and targets come from the same frozen source generation.
         next_population = population.copy()
         next_fitness = fitness.copy()
+        next_weights, next_rates = weights.copy(), rates.copy()
+        best = int(np.argmin(fitness))
         for i in range(population_size):
+            weight, rate = weights[i], rates[i]
+            if strategy == "jDE":
+                if rng.random() < 0.1:
+                    weight = 0.1 + 0.9 * rng.random()
+                if rng.random() < 0.1:
+                    rate = rng.random()
             donors = select_donors(rng, population_size, i)
-            mutant = mutate(population, donors, mutation_weight, limits)
-            trial = crossover(population[i], mutant, crossover_rate, rng)
+            if strategy == "current-to-best/1/bin":
+                mutant = mutate_current_to_best(population, i, best, donors, weight, limits)
+            else:
+                mutant = mutate(population, donors, weight, limits)
+            trial = crossover(population[i], mutant, rate, rng)
             trial_fitness = evaluate(trial, generation, i)
             if trial_fitness <= fitness[i]:
                 next_population[i] = trial
                 next_fitness[i] = trial_fitness
+                next_weights[i], next_rates[i] = weight, rate
         population, fitness = next_population, next_fitness
+        weights, rates = next_weights, next_rates
 
     return DEResult(best_position, best_value, history, time.perf_counter() - started)
 
@@ -132,6 +161,8 @@ def run_de_single_seed(
     population_size: int = 15,
     mutation_weight: float = 0.8,
     crossover_rate: float = 0.9,
+    feature_columns: list[str] = FEATURE_COLUMNS,
+    strategy: str = "rand/1/bin",
 ) -> dict[str, Any]:
     """Evaluate DE with the same CV objective as Random Search; no holdout access.
 
@@ -145,13 +176,14 @@ def run_de_single_seed(
         mean_rmse, rmses = evaluate_hyperparameters(
             log_C=float(position[0]), log_gamma=float(position[1]),
             log_epsilon=float(position[2]), df=df, cv_folds=cv_folds,
+            feature_columns=feature_columns,
         )
         fold_scores.append(rmses)
         return mean_rmse
 
     result = minimize_de(
         objective, [search_bounds[name] for name in PARAMETER_NAMES], seed,
-        budget, population_size, mutation_weight, crossover_rate,
+        budget, population_size, mutation_weight, crossover_rate, strategy,
     )
 
     def decode(position: list[float]) -> dict[str, float]:
@@ -167,7 +199,7 @@ def run_de_single_seed(
     } for i, record in enumerate(result.history)]
     best_index = min(range(len(history)), key=lambda i: history[i]["mean_cv_rmse"])
     return {
-        "optimizer": "DE/rand/1/bin", "seed": seed, "budget": budget,
+        "optimizer": "DE/" + strategy if strategy != "jDE" else "jDE", "seed": seed, "budget": budget,
         "total_evaluations": len(history), "population_size": population_size,
         "generations": budget // population_size - 1,
         "mutation_weight": mutation_weight, "crossover_rate": crossover_rate,
